@@ -1,0 +1,5 @@
+(let a = (evt( () )): ♢I in
+let b = (evt( () )): ♢I in
+sequence x ← a; y ← b st
+| when x -> evt((x, y))
+| when y -> evt((y, x))) : ♢(I⊗♢I)

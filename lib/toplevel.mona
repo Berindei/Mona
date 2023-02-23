@@ -1,0 +1,7 @@
+let extern mkButton: (I ⊸ ∃(i:Id). Widget i) = "_mkButton" in 
+let extern dropWidget: (∀(i:Id). Widget i ⊸ I) = "_dropWidget" in
+let extern onClick: (∀(i:Id). Widget i ⊸ (Widget i ⊗ ♢I)) = "_onClick" in
+let extern setColor: (∀(i:Id). ((Widget i ⊗ F(Color)) ⊸ Widget i)) = "_setColor" in
+let extern split: (∀(i:Id).∀(t:Time). Widget i ⊸ (Prefix i t ⊗ (Widget i @ t))) = "_split" in
+let extern join: (∀(i:Id).∀(t:Time). (Prefix i t ⊗ (Widget i @ t)) ⊸ Widget i) = "_join" in
+let extern Red: (Color) = "_red" in

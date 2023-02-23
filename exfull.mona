@@ -1,0 +1,13 @@
+(
+    let btn = mkButton () in
+    let pack(i, w) = btn in
+    let (w1, cl) = (onClick i) w in
+    let pack(n, clt) = out cl in
+    let @kl = clt in 
+    let ( ) = kl in
+    let (pr, wt) = ((split i) n) w1 in
+    let @wa = wt in
+    let wfa = ((@((setColor i) (wa,(F Red)))) : Widget i @ n) in
+    let wf = ((join i) n) (pr, wfa) in
+    wf
+) : Widget i
