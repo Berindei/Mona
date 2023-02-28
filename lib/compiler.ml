@@ -103,7 +103,7 @@ let rec compile e : string t=
   } else chan.put(b)})
   return curriedget(finchan);
 })()" e1' e2' x e3' y e4') (*might need to use some atomic locks*)
-  | EAt(e1) -> compile e1
+  | EAt(e1) -> compile e1 (*cum credeam, nevoie de context to some degree*)
   | LetAt(x, e1, e2) -> compile (Let(x, e1, e2))
   | LambdaIndx(x, e1) -> let* e1' = compile e1 in
                          return (fstring "function (unit){return (%s)}" e1')
@@ -119,7 +119,8 @@ let rec compile e : string t=
   | Extern(x, t, s, e') -> let* () = add (x, s) in compile e'
   | Out e' -> compile e'
   | Into e' -> compile e'
-  | Indx(x) -> failwith "This shouldn't happen"
+  | Indx(IVar x) -> return x 
+  | Indx _ -> failwith "This shouldn't happen"
 
 let generate e f = let out = open_out f in
                let js, _ = compile e [] in print_endline js;

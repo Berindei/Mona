@@ -27,5 +27,5 @@ let run inf outf =
     let code = readFile inf in 
     let prog = parse_with_error (top ^ "\n" ^ code) in
     match typeCheck prog with
-    | Value _ -> generate prog outf; Utils.fstring "Successfully compiled %s in %s" inf outf
+    | Value ((_, prog'), _) -> generate prog' outf; Utils.fstring "Successfully compiled %s in %s" inf outf
     | Error e -> e
