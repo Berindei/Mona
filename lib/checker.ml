@@ -184,7 +184,7 @@ and infer ?attempt (e: expr) (ent: ent) : (typ*expr) t = print_endline (fstring 
                       | Used when ent=Lin -> error (fstring "Multiple usages of variable %s in linear context" x)
                       | Inf -> error (fstring "Improper usage of intuitionistic variable %s in linear context" x)
                       | _ -> error (fstring "Improper usage of linear variable %s in intuitionistic context" x)
-                  ) in return (t', (Var x))
+                  ) in return (t', (TypedVar(x, t', s.at)))
     | EUnit, Int -> return (IUnit, EUnit)
     | EUnit, Lin -> return (LUnit, EUnit)
     | Proj1(e'), Int -> let* t1, t2, ef' = infer e' Int >>> plsProd in return (t1, (Proj1 ef'))

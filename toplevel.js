@@ -45,9 +45,10 @@ let _split = (id => t => widget => {
 })
 
 let _join = (id => t => ([prf, future_widget]) => {
-    return future_widget(x=>x);
+    future_widget(x=>x)
+    return prf;
 })
 
 let _red = "red";
 
-let run = () => document.body.append(main())
+let run = () => document.body.append(main())    

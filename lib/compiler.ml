@@ -15,6 +15,56 @@ let add b = fun bl -> ((), b::bl)
 
 let get s = fun bl -> (List.assoc_opt s bl, bl)
 
+let rec union l1 l2 = 
+  match l1 with
+  | [] -> l2
+  | x::xs -> if List.mem x l2 then union xs l2 else union xs (x::l2)
+
+let (@) = union
+
+let printfvs l = List.fold_left (^) "" (List.map (fun (x, at) -> fstring "%s:%s|" x (printindx at)) l) 
+
+let rec fv e =
+  match e with
+  | EUnit -> []
+  | LetUnit(e1, e2) -> (fv e1) @ (fv e2)
+  | Var x -> failwith "AAAAAAAAAAAAAAA"
+  | TypedVar(x, t, at) -> [(x, at)]
+  | Lambda(x, e1) -> fv e1
+  | App(e1, e2) -> (fv e1) @ (fv e2)
+  | Pair(e1, e2) -> (fv e1) @ (fv e2)
+  | Unpair(x1, x2, e1, e2) -> (fv e1) @ (fv e2)
+  | Annot(e1, t) -> fv e1
+  | L(e1) -> fv e1
+  | R(e1) -> fv e1
+  | Case(e1, x1, e2, x2, e3) -> (fv e1) @ (fv e2) @ (fv e3)
+  | Proj1(e1) -> fv e1
+  | Proj2(e1) -> fv e1
+  | EF(e1) -> fv e1
+  | EG(e1) -> fv e1
+  | LetF(x, e1, e2) -> (fv e1) @ (fv e2)
+  | Run(e1) -> fv e1
+  | EEvt(e1) -> fv e1
+  | LetEvt(x, e1, e2) -> (fv e1) @ (fv e2)
+  | Select(x, y, e1, e2, e3, e4) -> (fv e1) @ (fv e2) @ (fv e3) @ (fv e4)
+  | EAt(e1) -> fv e1
+  | LetAt(x, e1, e2) -> (fv e1) @ (fv e2)
+  | LambdaIndx(x, e1) -> fv e1
+  | AppIndx(e1, _) -> (fv e1)
+  | Pack(_, e2) -> (fv e2)
+  | LetPack(x, i, e1, e2) -> (fv e1) @ (fv e2)
+  | Let(x, e1, e2) -> (fv e1) @ (fv e2)
+  | LetFix(f, t, x, e1, e2) -> (fv e1) @ (fv e2)
+  | Extern(x, t, s, e1) -> fv e1
+  | Out(e1) -> fv e1
+  | Into(e1) -> fv e1
+  | Indx(_) -> []
+
+let rec constrchain l b = 
+  match l with
+  | []    -> fstring "chan.put(%s)" b
+  | x::xs -> fstring "%s(%s=>{%s})" x x (constrchain xs b)
+
 let rec compile e : string t=
   match e with
   | EUnit -> return "null"
@@ -103,7 +153,16 @@ let rec compile e : string t=
   } else chan.put(b)})
   return curriedget(finchan);
 })()" e1' e2' x e3' y e4') (*might need to use some atomic locks*)
-  | EAt(e1) -> compile e1 (*cum credeam, nevoie de context to some degree*)
+   (*cum credeam, nevoie de context to some degree*)
+  | EAt(e1) -> let chain = List.map (fun (x, at) -> x) (List.filter (fun (x, at) -> not(at=(Time 0))) (fv e1)) in
+               print_endline (printfvs (fv e1));
+               let* e1' = compile e1 in
+               let str = constrchain chain e1' in
+               return (fstring "(function(){
+                var chan = new Channel();
+                %s;
+                return curriedget(chan);
+              })()" str )
   | LetAt(x, e1, e2) -> compile (Let(x, e1, e2))
   | LambdaIndx(x, e1) -> let* e1' = compile e1 in
                          return (fstring "function (unit){return (%s)}" e1')
@@ -121,6 +180,7 @@ let rec compile e : string t=
   | Into e' -> compile e'
   | Indx(IVar x) -> return x 
   | Indx _ -> failwith "This shouldn't happen"
+  | TypedVar(x, _, at) -> compile (Var x)
 
 let generate e f = let out = open_out f in
                let js, _ = compile e [] in print_endline js;

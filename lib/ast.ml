@@ -71,6 +71,7 @@ type expr =
     | EUnit
     | LetUnit    of expr * expr
     | Var        of var
+    | TypedVar   of var * typ * indx
     | Lambda     of var * expr
     | LetFix     of var * typ * var * expr * expr
     | App        of expr * expr
@@ -135,3 +136,4 @@ let rec printexpr e =
     | Extern (f, t, s, e')            -> fstring "let extern %s:(%s) = %s in %s" f (printtype t) s (printexpr e')
     | Out e'                          -> fstring "out %s" (printexpr e')
     | Into e'                         -> fstring "into %s" (printexpr e')
+    | _ -> "##############"

@@ -73,7 +73,7 @@ funclike:
 
 lete:
     | LET; x = ID; EQ; e1 = expr; IN; e2 = expr                                                                        { Let(x, e1, e2) }
-    | LET; LPARAN RPARAN EQ e1=expr IN e2=expr                                                                         { LetUnit(e1, e2) }
+    | LET; UNIT EQ e1=expr IN e2=expr                                                                                  { LetUnit(e1, e2) }
     | LET; F; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                 { LetF(x, e1, e2) }
     | LET; LPARAN; x = ID; COMMA; y = ID; RPARAN; EQ; e1 = expr; IN; e2 = expr                                         { Unpair(x, y, e1, e2) }
     | LET; EVT; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                               { LetEvt(x, e1, e2) }
