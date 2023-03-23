@@ -1,0 +1,42 @@
+(let fix alwaysSetToRed: (∀(i:Id). (Widget i ⊸ Widget i)) i. λbtn.
+    (let w = btn in
+    let (w1, cl) = (onClick i) w in
+    let pack(n, clt) = out cl in
+    let @cla= clt in
+    let (pr, wt) = ((split i) n) w1 in
+    let @wa = wt in
+    let wfa = ((@(
+        let () = cla in
+        // (setColor i) ((((run alwaysSetToRed) i) wa),(F Red))
+        (setColor i) (wa ,(F Red))
+        )) : Widget i @ n) in
+    let wf = ((join i) n) (pr, wfa) in
+    wf)
+in
+let fix setOtherToBlue: (∀(i:Id).∀(j:Id).(Widget i ⊗ Widget j) ⊸ (Widget i ⊗ Widget j)) i. Λj. λbtnpair.
+    (let (btn1, btn2) = btnpair in
+    let (w1, cl) = (onClick i) btn1 in
+    let pack(n, clt) = out cl in
+    let @cla = clt in
+    let (pr2, wt2) = ((split j) n) btn2 in
+    let @wa2 = wt2 in
+    let (pr1, wt1) = ((split i) n) w1 in
+    let @wa1 = wt1 in
+    let p: ((Widget i ⊗ Widget j) @ n) = @(
+        let () = cla in
+        let tempwf2 = (setColor j) (wa2, (F Blue)) in
+        (((run setOtherToBlue) i) j) (wa1, tempwf2)
+    ) in
+    let @(wfa1, wfa2) = p in
+    let wf2 = ((join j) n) (pr2, wfa2) in
+    let wf1 = ((join i) n) (pr1, wfa1) in
+    (wf1, wf2))
+in
+let switch: (∀(i:Id).∀(j:Id). (Widget i ⊗ Widget j) ⊸ (Widget j ⊗ Widget i)) = Λi. Λj. λp.
+    let (w1, w2) = p in (w2, w1)
+in
+let (btn1ex, btn2ex) = ((mkButton ()), (mkButton ())) in
+let pack(i1, btn1) = btn1ex in let pack(j1, btn2) = btn2ex in
+let btnred = ((run alwaysSetToRed) i1) btn1 in
+((switch j1) i1) ((((run setOtherToBlue) j1) i1) (btn2, btnred))) : Widget i1 ⊗ Widget j1
+    

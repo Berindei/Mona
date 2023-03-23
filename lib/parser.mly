@@ -5,6 +5,7 @@
 %token <string> ID
 %token <int> NUM
 %token <string> STRING
+%token <char> CHAR
 %token UNIT IUNIT LUNIT
 %token LAMBDA BLAMBDA
 %token LPARAN RPARAN
@@ -28,9 +29,12 @@
 %token WIDGET PREFIX
 %token OUT INTO
 %token COLOR
+%token TNUM TSTRING TCHAR
 %token EOF
 
 %start <Ast.expr> prog
+
+%left LEFTASSOC 
 
 %%
 
@@ -41,17 +45,19 @@ prog:
 expr:
     | x = ID                                                                                                           { Var x }
     | UNIT                                                                                                             { EUnit }
+    | s = STRING                                                                                                       { EString s }
+    | c = CHAR                                                                                                         { EChar c }
+    | n = NUM                                                                                                          { ENum n }
     | LAMBDA; x = ID; DOT; e = expr                                                                                    { Lambda(x, e) }
     | BLAMBDA; i = ID; DOT; e = expr                                                                                   { LambdaIndx(i, e) }
     | e1 = expr; e2 = expr                                                                                             { App(e1, e2) }
-    | e1 = expr; i = indx                                                                                              { App(e1, Indx(i)) }
     | e = expr; COLON; t = typ                                                                                         { Annot(e, t) }
     | CASE; LPARAN; e = expr; COMMA; L; x = paranv; RARROW; e1 = expr; COMMA; R; y = paranv; RARROW; e2 = expr; RPARAN { Case(e, x, e1, y, e2) }
     | e1 = expr; COMMA; e2 = expr                                                                                      { Pair(e1, e2) }
     | SEQ; x = ID; LARROW; e1 = expr; SEMICOLON; y = ID; LARROW; e2 = expr; ST; BAR WHEN a = ID; RARROW; e3 = expr; BAR WHEN b = ID; RARROW e4 = expr { if a=x && b=y then Select(x, y, e1, e2, e3, e4)
                                                                                                                                              else if a=y && b=x then Select(x, y, e1, e2, e3, e4)
                                                                                                                                              else failwith "parsing error"}
-    | PACK LPARAN x=indx COMMA y=expr RPARAN                                                                           { Pack(x, y) }
+    | PACK LPARAN x=ID COMMA y=expr RPARAN                                                                             { Pack((IVar x), y) }
     | e = lete                                                                                                         { e }
     | e = funclike                                                                                                     { e }
     | e = parane                                                                                                       { e }
@@ -72,6 +78,8 @@ funclike:
     ;
 
 lete:
+    | LET; x = ID; COLON; t = typ; EQ; e1 = expr; IN; e2 = expr                                                        { Let(x, Annot(e1, t), e2) }
+    | LET AT LPARAN x1 = ID COMMA x2 = ID RPARAN EQ e1 = expr IN e2 = expr                                             { AtUnpair(x1, x2, e1, e2) }
     | LET; x = ID; EQ; e1 = expr; IN; e2 = expr                                                                        { Let(x, e1, e2) }
     | LET; UNIT EQ e1=expr IN e2=expr                                                                                  { LetUnit(e1, e2) }
     | LET; F; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                 { LetF(x, e1, e2) }
@@ -97,6 +105,9 @@ typ:
     | IUNIT                                                      { IUnit }
     | LUNIT                                                      { LUnit }
     | COLOR                                                      { Color }
+    | TSTRING                                                    { String }
+    | TCHAR                                                      { Char }
+    | TNUM                                                       { Num }
     | t1 = typ; RARROW; t2 = typ                                 { Arrow(t1, t2) }
     | t1 = typ; LOLI; t2 = typ                                   { Loli(t1, t2) }
     | t1 = typ; TIMES; t2 = typ                                  { Prod(t1, t2) }
@@ -104,11 +115,11 @@ typ:
     | t1 = typ; PLUS; t2 = typ                                   { ISum(t1, t2) }
     | t1 = typ; LPLUS; t2 = typ                                  { LSum(t1, t2) }
     | DIAMOND; t = typ                                           { Evt t }
-    | t = typ; AT; i = indx                                      { At(t, i) }
+    | t = typ; AT; i = ID                                        { At(t, (IVar i)) }
     | UNIV LPARAN i = ID COLON it=indxtype RPARAN DOT t = typ    { Univ(i, it, t) }
     | EXIST LPARAN i = ID COLON it=indxtype RPARAN DOT t=typ     { Exist(i, it, t) }
-    | WIDGET i = indx                                            { Widget i}
-    | PREFIX i = indx t = indx                                   { Prefix (i, t)}
+    | WIDGET i = ID                                              { Widget (IVar i)}
+    | PREFIX i = ID t = ID                                       { Prefix ((IVar i), (IVar t))}
     | t = funcliket                                              { t }
     | t = parant                                                 { t }
     ;
@@ -121,10 +132,6 @@ funcliket:
     | F; t = typ                                                 { F t }
     | G; t = typ                                                 { G t }
     | DIAMOND; t = typ                                           { Evt t }
-
-indx:
-    | x = ID  { IVar x }
-    | n = NUM { Time n }
 
 indxtype:
     | TIME { TTime }

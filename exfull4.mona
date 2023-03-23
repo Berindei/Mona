@@ -1,0 +1,14 @@
+(
+    let btn = mkButton () in
+    let pack(i, w) = btn in
+    let w1 = (setText i) (w, (F "First text")) in
+    let (w2, clevent) = (onClick i) w1 in
+    let pack(n, clat) = out clevent in
+    let @cl = clat in
+    let (pr, wat) = ((split i) n) w2 in
+    let @wthen = wat in
+    let wf: (Widget i @ n) = @(
+        let () = cl in (setText i) (wthen, (F "Clicked text"))
+    ) in
+    ((join i) n) (pr, wf)
+): Widget i

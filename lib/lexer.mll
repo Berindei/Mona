@@ -8,6 +8,7 @@ let digit = ['0'-'9']
 let id = (letter|digit)+
 let comment = "//" [^'\n']* "\n"
 let string = "\"" [^'\"']* "\""
+let char = "\'" letter "\'"
 let num = digit+
 
 rule read = 
@@ -41,7 +42,9 @@ rule read =
     | "G"         { G }
     | "case"      { CASE }
     | "π1"        { P1 }
+    | "fst"       { P1 }
     | "π2"        { P2 }
+    | "snd"       { P2 }
     | "run"       { RUN }
     | "="         { EQ }
     | "in"        { IN }
@@ -72,7 +75,11 @@ rule read =
     | "out"       { OUT }
     | "into"      { INTO }
     | "Color"     { COLOR }
+    | "String"    { TSTRING }
+    | "Num"       { TNUM }
+    | "Char"      { TCHAR }
     | string      { let s = Lexing.lexeme lexbuf in let l = String.length s in STRING (String.sub s 1 (l-2))}
     | num         { NUM (int_of_string (Lexing.lexeme lexbuf)) }
-    | id          { ID (Lexing.lexeme lexbuf) }
+    | char        { let s = Lexing.lexeme lexbuf in CHAR (String.get s 1) }
+    | id          { ID ("_" ^ (Lexing.lexeme lexbuf)) }
     | eof         { EOF }

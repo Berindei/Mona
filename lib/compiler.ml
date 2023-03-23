@@ -20,6 +20,12 @@ let rec union l1 l2 =
   | [] -> l2
   | x::xs -> if List.mem x l2 then union xs l2 else union xs (x::l2)
 
+let rec minus l x =
+  match l with
+  | [] -> []
+  | (y, _) :: xs when x=y -> minus xs x
+  | oth :: xs -> oth :: (minus xs x)
+
 let (@) = union
 
 let printfvs l = List.fold_left (^) "" (List.map (fun (x, at) -> fstring "%s:%s|" x (printindx at)) l) 
@@ -30,35 +36,36 @@ let rec fv e =
   | LetUnit(e1, e2) -> (fv e1) @ (fv e2)
   | Var x -> failwith "AAAAAAAAAAAAAAA"
   | TypedVar(x, t, at) -> [(x, at)]
-  | Lambda(x, e1) -> fv e1
+  | Lambda(x, e1) -> minus (fv e1) x
   | App(e1, e2) -> (fv e1) @ (fv e2)
   | Pair(e1, e2) -> (fv e1) @ (fv e2)
-  | Unpair(x1, x2, e1, e2) -> (fv e1) @ (fv e2)
+  | Unpair(x1, x2, e1, e2) -> minus (minus ((fv e1) @ (fv e2)) x1) x2
+  | AtUnpair(x1, x2, e1, e2) -> minus (minus ((fv e1) @ (fv e2)) x1) x2
   | Annot(e1, t) -> fv e1
   | L(e1) -> fv e1
   | R(e1) -> fv e1
-  | Case(e1, x1, e2, x2, e3) -> (fv e1) @ (fv e2) @ (fv e3)
+  | Case(e1, x1, e2, x2, e3) -> (fv e1) @ (minus (fv e2) x1) @ (minus (fv e3) x2)
   | Proj1(e1) -> fv e1
   | Proj2(e1) -> fv e1
   | EF(e1) -> fv e1
   | EG(e1) -> fv e1
-  | LetF(x, e1, e2) -> (fv e1) @ (fv e2)
+  | LetF(x, e1, e2) -> minus ((fv e1) @ (fv e2)) x
   | Run(e1) -> fv e1
   | EEvt(e1) -> fv e1
-  | LetEvt(x, e1, e2) -> (fv e1) @ (fv e2)
-  | Select(x, y, e1, e2, e3, e4) -> (fv e1) @ (fv e2) @ (fv e3) @ (fv e4)
-  | EAt(e1) -> fv e1
-  | LetAt(x, e1, e2) -> (fv e1) @ (fv e2)
+  | LetEvt(x, e1, e2) -> minus ((fv e1) @ (fv e2)) x
+  | Select(x, y, e1, e2, e3, e4) -> minus (minus ((fv e1) @ (fv e2) @ (fv e3) @ (fv e4)) x) y
+  | EAt(e1) -> []
+  | LetAt(x, e1, e2) -> minus ((fv e1) @ (fv e2)) x
   | LambdaIndx(x, e1) -> fv e1
   | AppIndx(e1, _) -> (fv e1)
   | Pack(_, e2) -> (fv e2)
-  | LetPack(x, i, e1, e2) -> (fv e1) @ (fv e2)
-  | Let(x, e1, e2) -> (fv e1) @ (fv e2)
-  | LetFix(f, t, x, e1, e2) -> (fv e1) @ (fv e2)
+  | LetPack(x, i, e1, e2) -> minus ((fv e1) @ (fv e2)) x
+  | Let(x, e1, e2) -> minus ((fv e1) @ (fv e2)) x
+  | LetFix(f, t, x, e1, e2) -> minus (minus ((fv e1) @ (fv e2)) f) x
   | Extern(x, t, s, e1) -> fv e1
   | Out(e1) -> fv e1
   | Into(e1) -> fv e1
-  | Indx(_) -> []
+  | Indx(_) | ENum(_) | EChar(_) | EString(_) -> []
 
 let rec constrchain l b = 
   match l with
@@ -134,25 +141,25 @@ let rec compile e : string t=
                                     return (fstring "(function (){
   var chan = new Channel();
   var finchan = new Channel();
-  var g1 = %s;
-  var g2 = %s;
-  var f1 = %s => (%s);
-  var f2 = %s => (%s);
+  var g1 = (%s);
+  var g2 = (%s);
+  var f1 = (%s => (%s => (%s))); // what i have, what i dont have, what it do
+  var f2 = (%s => (%s => (%s)));
   var first = true;
   g1( a=> {if(first){
     first = false;
     var newchan = new Channel();
-    chan.get(newchan.put);
-    f1(a)(newchan.get)(x => finchan.put(x))
+    chan.get(curriedput(newchan));
+    f1(a)(curriedget(newchan))(curriedput(finchan))
   } else chan.put(a)})
   g2( b=> {if(first){
     first = false;
     var newchan = new Channel();
-    chan.get(newchan.put);
-    f2(b)(newchan.get)(x => finchan.put(x))
+    chan.get(curriedput(newchan));
+    f2(b)(curriedget(newchan))(curriedput(finchan))
   } else chan.put(b)})
   return curriedget(finchan);
-})()" e1' e2' x e3' y e4') (*might need to use some atomic locks*)
+})()" e1' e2' x y e3' y x e4') (*might need to use some atomic locks*)
    (*cum credeam, nevoie de context to some degree*)
   | EAt(e1) -> let chain = List.map (fun (x, at) -> x) (List.filter (fun (x, at) -> not(at=(Time 0))) (fv e1)) in
                print_endline (printfvs (fv e1));
@@ -165,7 +172,7 @@ let rec compile e : string t=
               })()" str )
   | LetAt(x, e1, e2) -> compile (Let(x, e1, e2))
   | LambdaIndx(x, e1) -> let* e1' = compile e1 in
-                         return (fstring "function (unit){return (%s)}" e1')
+                         return (fstring "function (%s){return (%s)}" x e1')
   | AppIndx(e1, e2) -> let* e1' = compile e1 in
                        return (fstring "(%s)(null)" e1')
   | Pack(e1, e2) -> let* e2' = compile e2 in
@@ -174,13 +181,31 @@ let rec compile e : string t=
   | Let(x, e1, e2) -> compile (App(Lambda(x, e2), e1))
   | LetFix(f, t, x, e1, e2) -> let* e1' = compile e1 in
                                let* e2' = compile e2 in
-                               return (fstring "(function (%s){return (%s)})(function %s(%s){return (%s);})" f e2' f x e1' )
+                               return (fstring
+"((function (%s){return (%s);})
+(function %s(unit){
+  return ( (%s) => {return (%s);} );
+}))" f e2' f x e1' )
   | Extern(x, t, s, e') -> let* () = add (x, s) in compile e'
   | Out e' -> compile e'
   | Into e' -> compile e'
   | Indx(IVar x) -> return x 
   | Indx _ -> failwith "This shouldn't happen"
   | TypedVar(x, _, at) -> compile (Var x)
+  | ENum n -> return (string_of_int n)
+  | EChar c -> return (fstring "\'%c\'" c)
+  | EString s -> return (fstring "\"%s\"" s)
+  | AtUnpair(x1, x2, e1, e2) -> let* e1' = compile e1 in
+                                let* e2' = compile e2 in
+                                return (fstring "
+(function(){
+  var chan1 = new Channel();
+  var chan2 = new Channel();
+  var g = (%s);
+  g(pair => {chan1.put(pair[0]); chan2.put(pair[1]);})
+  var f = (%s => %s => (%s))
+  return f(curriedget(chan1))(curriedget(chan2))
+})()" e1' x1 x2 e2')
 
 let generate e f = let out = open_out f in
                let js, _ = compile e [] in print_endline js;

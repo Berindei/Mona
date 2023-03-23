@@ -86,7 +86,7 @@ let rec lookup_update: var -> state t = fun (x: var) -> fun (ctx: ctx) ->
     match ctx with
     | []                     -> Error (fstring "Variable %s not in context" x)
     | y :: ys when x = y.var && ignore y -> Error (fstring "Variable %s not available in this context" x)
-    | y :: ys when x = y.var && y.used = Inf -> Value (y, ctx)
+    | y :: ys when x = y.var && not (islins y) -> Value (y, ctx)
     | y :: ys when x = y.var -> Value (y, {y with used=Used} :: ys)
     | y :: ys                -> (lookup_update x >>= (fun s -> fun ctx' -> Value(s, y :: ctx'))) ys
 

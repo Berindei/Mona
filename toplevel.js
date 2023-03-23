@@ -9,7 +9,7 @@ class Channel{
         else if (this.state.state=="value"){
             var v = this.state.v
             this.state = {state:"done"}
-            return k(v);
+            k(v);
         }
     }
     put(v){
@@ -19,12 +19,13 @@ class Channel{
         else if (this.state.state=="cb"){
             var cb = this.state.cb;
             this.state = {state: "done"}
-            return cb(v);
+            cb(v);
         }
     }
 }
 
 let curriedget = ch => cb => ch.get(cb);
+let curriedput = ch => cb => ch.put(cb);
 
 let _mkButton = (unit => {
     let b = document.createElement("button");
@@ -32,7 +33,12 @@ let _mkButton = (unit => {
 })
 
 let _onClick = (id => widget => {
-    return [widget, function(cb){return widget.addEventListener("click", cb)}];
+    return [widget, function(cb){return widget.addEventListener("click", cb, {once: true})}];
+})
+
+let _setText = (id => ([widget, text]) => {
+    widget.textContent = text
+    return widget
 })
 
 let _setColor = (id => ([widget, color]) => {
@@ -51,4 +57,15 @@ let _join = (id => t => ([prf, future_widget]) => {
 
 let _red = "red";
 
-let run = () => document.body.append(main())    
+let _blue = "blue";
+
+let _green = "green";
+
+let _yellow = "yellow";
+
+let run = () => {
+    document.body.textContent = ""
+    let res = main()
+    document.body.append(res)
+    return res
+}

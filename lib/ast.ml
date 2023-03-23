@@ -44,6 +44,9 @@ type typ =
     | Exist  of var * indxtype * typ
     | Widget of indx
     | Prefix of indx * indx
+    | Num  
+    | Char  
+    | String
 
 let rec printtype t = 
     match t with
@@ -66,41 +69,48 @@ let rec printtype t =
     | Widget i          -> fstring "Widget %s" (printindx i)
     | Prefix (i, t)     -> fstring "Prefix %s %s" (printindx i) (printindx t)
     | Color             -> "Color"
+    | Num               -> "Num"
+    | Char              -> "Char"
+    | String            -> "String"
 
 type expr = 
     | EUnit
-    | LetUnit    of expr * expr
-    | Var        of var
-    | TypedVar   of var * typ * indx
-    | Lambda     of var * expr
-    | LetFix     of var * typ * var * expr * expr
-    | App        of expr * expr
-    | Pair       of expr * expr
-    | Unpair     of var * var * expr * expr
-    | Annot      of expr * typ
-    | L          of expr
-    | R          of expr
-    | Case       of expr * var * expr * var * expr
-    | Proj1      of expr
-    | Proj2      of expr
-    | EF         of expr
-    | EG         of expr
-    | Run        of expr
-    | LetF       of var * expr * expr
-    | EEvt       of expr
-    | LetEvt     of var * expr * expr
-    | Let        of var * expr * expr
-    | Select     of var * var * expr * expr * expr * expr
-    | EAt        of expr
-    | LetAt      of var * expr * expr
-    | LambdaIndx of var * expr
-    | AppIndx    of expr * indx
-    | Pack       of indx * expr
-    | LetPack    of var * var * expr * expr
-    | Indx       of indx
-    | Extern     of var * typ * string * expr
-    | Out        of expr
-    | Into       of expr
+    | LetUnit       of expr * expr
+    | Var           of var
+    | TypedVar      of var * typ * indx
+    | Lambda        of var * expr
+    | LetFix        of var * typ * var * expr * expr
+    | App           of expr * expr
+    | Pair          of expr * expr
+    | Unpair        of var * var * expr * expr
+    | AtUnpair      of var * var * expr * expr
+    | Annot         of expr * typ
+    | L             of expr
+    | R             of expr
+    | Case          of expr * var * expr * var * expr
+    | Proj1         of expr
+    | Proj2         of expr
+    | EF            of expr
+    | EG            of expr
+    | Run           of expr
+    | LetF          of var * expr * expr
+    | EEvt          of expr
+    | LetEvt        of var * expr * expr
+    | Let           of var * expr * expr
+    | Select        of var * var * expr * expr * expr * expr
+    | EAt           of expr
+    | LetAt         of var * expr * expr
+    | LambdaIndx    of var * expr
+    | AppIndx       of expr * indx
+    | Pack          of indx * expr
+    | LetPack       of var * var * expr * expr
+    | Indx          of indx
+    | Extern        of var * typ * string * expr
+    | Out           of expr
+    | Into          of expr
+    | ENum          of int
+    | EChar         of char
+    | EString       of string
 
 let rec printexpr e =
     match e with
@@ -112,6 +122,7 @@ let rec printexpr e =
     | App (e1, e2)                    -> fstring "(%s)(%s)" (printexpr e1) (printexpr e2)
     | Pair (e1, e2)                   -> fstring "(%s, %s)" (printexpr e1) (printexpr e2)
     | Unpair (x1, x2, e1, e2)         -> fstring "let (%s,%s) = %s in %s" x1 x2 (printexpr e1) (printexpr e2)
+    | AtUnpair (x1, x2, e1, e2)       -> fstring "let @(%s, %s) = %s in %s" x1 x2 (printexpr e1) (printexpr e2)
     | Annot (e', t)                   -> fstring "(%s: %s)" (printexpr e') (printtype t)
     | L e'                            -> fstring "L(%s)" (printexpr e')
     | R e'                            -> fstring "R(%s)" (printexpr e')
@@ -136,4 +147,7 @@ let rec printexpr e =
     | Extern (f, t, s, e')            -> fstring "let extern %s:(%s) = %s in %s" f (printtype t) s (printexpr e')
     | Out e'                          -> fstring "out %s" (printexpr e')
     | Into e'                         -> fstring "into %s" (printexpr e')
+    | ENum n                          -> string_of_int n
+    | EChar c                         -> fstring "\'%c\'" c
+    | EString s                       -> fstring "\"%s\"" s
     | _ -> "##############"

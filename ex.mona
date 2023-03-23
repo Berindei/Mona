@@ -1,3 +1,3 @@
 (
-    evt(F(Red))
-) : ♢(F(Color))
+    let fix f: A⊸B x = case (x, )
+) : I@ala
