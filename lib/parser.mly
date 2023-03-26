@@ -80,7 +80,7 @@ funclike:
 lete:
     | LET p=pat EQ e1=expr IN e2=expr                                                                                { match p with PAnnot(p', t) -> Let(p', Annot(e1, t), e2) | _ -> Let(p, e1, e2)}
     //| LET; x = ID; COLON; t = typ; EQ; e1 = expr; IN; e2 = expr                                                        { Let(x, Annot(e1, t), e2) }
-    | LET AT LPARAN x1 = ID COMMA x2 = ID RPARAN EQ e1 = expr IN e2 = expr                                             { AtUnpair(x1, x2, e1, e2) }
+    | LET AT LPARAN p1 = pat COMMA p2 = pat RPARAN EQ e1 = expr IN e2 = expr                                         { AtUnpair(p1, p2, e1, e2) }
     //| LET; x = ID; EQ; e1 = expr; IN; e2 = expr                                                                        { Let(x, e1, e2) }
     //| LET; UNIT EQ e1=expr IN e2=expr                                                                                  { LetUnit(e1, e2) }
     //| LET; F; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                 { LetF(x, e1, e2) }

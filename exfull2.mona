@@ -14,17 +14,12 @@
                          let cl2: ♢(F Color) = (let evt(un) = x in let () = un in evt(F (Yellow))) in
                          evt((cl1, cl2)))) in
     let pack(n, colat) = out col in
-    let @(colatnow, colatthen) = colat in
-    let @coltnow = colatnow in
-    let @coltthen = colatthen in
-    let (pr, fw) = ((split ifin) n) btnfin in
-    let @fwt = fw in
+    let @((@coltnow), (@coltthen)) = colat in
+    let (pr, @fwt) = ((split ifin) n) btnfin in
     let fwfin: (Widget ifin @ n) = @(
         let w1 = (setColor ifin) (fwt, coltnow) in
-        let pack(n2, coltatthen) = out coltthen in
-        let @colttthen = coltatthen in 
-        let (pr2, fw2a) = ((split ifin) n2) w1 in
-        let @fw2 = fw2a in
+        let pack(n2, @colttthen) = out coltthen in
+        let (pr2, @fw2) = ((split ifin) n2) w1 in
         let wf: Widget ifin @ n2 = @(
             (setColor ifin) (fw2, colttthen)
         ) in

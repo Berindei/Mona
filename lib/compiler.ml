@@ -63,7 +63,7 @@ let rec fv e =
   | App(e1, e2) -> (fv e1) @ (fv e2)
   | Pair(e1, e2) -> (fv e1) @ (fv e2)
   (* | Unpair(x1, x2, e1, e2) -> minus (minus ((fv e1) @ (fv e2)) x1) x2 *)
-  | AtUnpair(x1, x2, e1, e2) -> minus (minus ((fv e1) @ (fv e2)) x1) x2
+  | AtUnpair(p1, p2, e1, e2) -> List.fold_left minus (List.fold_left minus ((fv e1) @ (fv e2)) (vars p1)) (vars p2)
   | Annot(e1, t) -> fv e1
   | L(e1) -> fv e1
   | R(e1) -> fv e1
@@ -203,10 +203,10 @@ let rec compile e : string t=
   (* | LetPack(i, x, e1, e2) -> compile (Let(i, EUnit, (Let(x, e1, e2)))) *)
   | Let(p, e1, e2) -> let* e1' = compile e1 in
                       let* e2' = compile e2 in
-                      let params, accs = buildParamStrings p "p1" in
+                      let params, accs = buildParamStrings p "g" in
                       return (fstring "
 (function(){
-  p1 = %s
+  g = %s
   return (function (%s){
   return (%s)
 })(%s)})()" e1' params e2' accs)
@@ -226,17 +226,20 @@ let rec compile e : string t=
   | ENum n -> return (string_of_int n)
   | EChar c -> return (fstring "\'%c\'" c)
   | EString s -> return (fstring "\"%s\"" s)
-  | AtUnpair(x1, x2, e1, e2) -> let* e1' = compile e1 in
+  | AtUnpair(p1, p2, e1, e2) -> let* e1' = compile e1 in
                                 let* e2' = compile e2 in
+                                let (params1, accs1), (params2, accs2) = (buildParamStrings p1 "curriedget(chan1)"), (buildParamStrings p2 "curriedget(chan2)") in
                                 return (fstring "
 (function(){
   var chan1 = new Channel();
   var chan2 = new Channel();
   var g = (%s);
   g(pair => {chan1.put(pair[0]); chan2.put(pair[1]);})
-  var f = (%s => %s => (%s))
-  return f(curriedget(chan1))(curriedget(chan2))
-})()" e1' x1 x2 e2')
+  function f(%s, %s){
+    return (%s)
+  }
+  return f(%s, %s)
+})()" e1' params1 params2 e2' accs1 accs2)
 
 let generate e f = let out = open_out f in
                let js, _ = compile e [] in print_endline js;

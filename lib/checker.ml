@@ -110,6 +110,9 @@ let rec getPatVar p t ent=
                                                     return (l1 @ l2)
         | PF p, F t -> getPatVar p t Int
         | PAt (PVar x), At(t, i) -> return [(delayed x t i)]
+        | PAt (PPair(p1, p2)), At(Tensor(t1, t2), i) -> let* l1 = getPatVar p1 (At(t1, i)) Lin in
+                                                        let* l2 = getPatVar p2 (At(t2, i)) Lin in
+                                                        return (l1 @ l2)
         | PPack(i, p), Exist(j, jt, t) -> let* l = getPatVar p (sub j (IVar i) t) Lin in
                                           return ((int i (IndxT jt))::l)
         | PAnnot(p, t'), t -> if t=t' then getPatVar p t Lin
@@ -202,10 +205,10 @@ let rec check (e: expr) (t: typ) (ent: ent) : expr t = print_endline (fstring "C
                                                                                 else error (fstring "Different resulting contexts in select statement %s" (printexpr e)))                                                         *)
     | EAt(e')(*might want to add time to expr but not necessary*), At(t', i), Lin -> let* _ = check (Indx i) (IndxT TTime) Ind in
                                                                                      let* ef' = delay i (check e' t' Lin) in return (EAt ef')
-    | AtUnpair(x1, x2, e1, e2), _, Lin -> let* tat, i, ef1 = infer e1 Lin >>> plsAt in
-                                          let* t1, t2, _ = plsTensor (tat, EUnit) in
-                                          let* ef2 = withvars [fresh x1 (At(t1, i)); fresh x2 (At(t2, i))] (check e2 t Lin) in
-                                          return (AtUnpair(x1, x2, ef1, ef2))
+    | AtUnpair(p1, p2, e1, e2), _, Lin -> let* t', ef1 = infer e1 Lin in
+                                          let* l1 = getPatVar (PAtPair(p1, p2)) t' Lin in
+                                          let* ef2 = withvars l1 (check e2 t Lin) in
+                                          return (AtUnpair(p1, p2, ef1, ef2))
     | LambdaIndx(i, e'), Univ(ti, it, t'), Lin  when i=ti-> let* ef' = withvar (int i (IndxT it)) (check e' t' Lin) in return (LambdaIndx(i, ef')) (*if diff, gen new name*)
     (* | LetAt(x, e1, e2), _, Lin -> let* t', tau, ef1 = infer e1 Lin >>> plsAt in
                                   let* ef2 = withvar (delayed x t' tau) (check e2 t Lin) in

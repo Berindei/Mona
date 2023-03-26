@@ -89,8 +89,8 @@ let rec printpat p =
     | PAt p -> fstring "@(%s)" (printpat p)
     | PF p -> fstring "F(%s)" (printpat p)
     | PPack (i, p) -> fstring "pack(%s, %s)" i (printpat p)
-    | PPair(p1, p2) -> fstring "(%s, %s)" (printpat p1) (printpat p2)
-    | PAtPair(p1, p2) -> fstring "@(%s, %s)" (printpat p1) (printpat p2)
+    | PPair(p1, p2) -> fstring "Pair(%s, %s)" (printpat p1) (printpat p2)
+    | PAtPair(p1, p2) -> fstring "P@(%s, %s)" (printpat p1) (printpat p2)
     | PVar x -> x
     | PAnnot(p, t) -> fstring "(%s: %s)" (printpat p) (printtype t)
 
@@ -105,7 +105,7 @@ type expr =
     | App           of expr * expr
     | Pair          of expr * expr
     (* | Unpair        of var * var * expr * expr *)
-    | AtUnpair      of var * var * expr * expr
+    | AtUnpair      of pat * pat * expr * expr
     | Annot         of expr * typ
     | L             of expr
     | R             of expr
@@ -145,7 +145,7 @@ let rec printexpr e =
     | App (e1, e2)                    -> fstring "(%s)(%s)" (printexpr e1) (printexpr e2)
     | Pair (e1, e2)                   -> fstring "(%s, %s)" (printexpr e1) (printexpr e2)
     (* | Unpair (x1, x2, e1, e2)         -> fstring "let (%s,%s) = %s in %s" x1 x2 (printexpr e1) (printexpr e2) *)
-    | AtUnpair (x1, x2, e1, e2)       -> fstring "let @(%s, %s) = %s in %s" x1 x2 (printexpr e1) (printexpr e2)
+    | AtUnpair (x1, x2, e1, e2)       -> fstring "let @(%s, %s) = %s in %s" (printpat x1) (printpat x2) (printexpr e1) (printexpr e2)
     | Annot (e', t)                   -> fstring "(%s: %s)" (printexpr e') (printtype t)
     | L e'                            -> fstring "L(%s)" (printexpr e')
     | R e'                            -> fstring "R(%s)" (printexpr e')
