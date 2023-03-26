@@ -78,15 +78,16 @@ funclike:
     ;
 
 lete:
-    | LET; x = ID; COLON; t = typ; EQ; e1 = expr; IN; e2 = expr                                                        { Let(x, Annot(e1, t), e2) }
+    | LET p=pat EQ e1=expr IN e2=expr                                                                                { match p with PAnnot(p', t) -> Let(p', Annot(e1, t), e2) | _ -> Let(p, e1, e2)}
+    //| LET; x = ID; COLON; t = typ; EQ; e1 = expr; IN; e2 = expr                                                        { Let(x, Annot(e1, t), e2) }
     | LET AT LPARAN x1 = ID COMMA x2 = ID RPARAN EQ e1 = expr IN e2 = expr                                             { AtUnpair(x1, x2, e1, e2) }
-    | LET; x = ID; EQ; e1 = expr; IN; e2 = expr                                                                        { Let(x, e1, e2) }
-    | LET; UNIT EQ e1=expr IN e2=expr                                                                                  { LetUnit(e1, e2) }
-    | LET; F; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                 { LetF(x, e1, e2) }
-    | LET; LPARAN; x = ID; COMMA; y = ID; RPARAN; EQ; e1 = expr; IN; e2 = expr                                         { Unpair(x, y, e1, e2) }
+    //| LET; x = ID; EQ; e1 = expr; IN; e2 = expr                                                                        { Let(x, e1, e2) }
+    //| LET; UNIT EQ e1=expr IN e2=expr                                                                                  { LetUnit(e1, e2) }
+    //| LET; F; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                 { LetF(x, e1, e2) }
+    //| LET; LPARAN; x = ID; COMMA; y = ID; RPARAN; EQ; e1 = expr; IN; e2 = expr                                         { Unpair(x, y, e1, e2) }
     | LET; EVT; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                               { LetEvt(x, e1, e2) }
-    | LET; AT; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                { LetAt(x, e1, e2) }
-    | LET PACK LPARAN x=ID COMMA y=ID RPARAN EQ e1=expr IN e2=expr                                                     { LetPack(x, y, e1, e2) }
+    //| LET; AT; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                { LetAt(x, e1, e2) }
+    //| LET PACK LPARAN x=ID COMMA y=ID RPARAN EQ e1=expr IN e2=expr                                                     { LetPack(x, y, e1, e2) }
     | LET EXTERN x=ID COLON t=typ EQ s=STRING IN e=expr                                                                { Extern(x, t, s, e) }
     | LET FIX f=ID COLON LPARAN t=typ RPARAN x=ID DOT e1=expr IN e2=expr                                               { LetFix(f, t, x, e1, e2) }
     ;
@@ -136,3 +137,13 @@ funcliket:
 indxtype:
     | TIME { TTime }
     | WID  { TId }
+
+pat:
+    | LPARAN p=pat RPARAN                 { p }
+    | UNIT                                { PUnit }
+    | x=ID                                { PVar x }
+    | p=pat COLON t=typ                   { PAnnot(p, t) }
+    | F p=pat                             { PF p }
+    | AT p=pat                            { PAt p }
+    | PACK LPARAN x=ID COMMA p=pat RPARAN { PPack(x, p) }
+    | p1=pat COMMA p2=pat                 { PPair(p1, p2) }

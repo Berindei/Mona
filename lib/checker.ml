@@ -95,19 +95,49 @@ let rec sub: var -> indx -> typ -> typ = fun x -> fun s -> fun t ->
     | Widget i -> Widget i
     | Prefix ((IVar i), t) when x=i -> Prefix (s, t)
     | Prefix (i, (IVar t)) when x=t -> Prefix (i, s)
-    | Prefix (i, t) -> Prefix (i, t)
+    | Prefix (i, t) -> Prefix (i, t);;
+
+let rec getPatVar p t ent=
+    if ent = Lin then 
+        match p, t with
+        | PVar x, t -> return [fresh x t]
+        | PUnit, LUnit -> return []
+        | PPair(p1, p2), Tensor(t1, t2) -> let* l1 = getPatVar p1 t1 Lin in
+                                           let* l2 = getPatVar p2 t2 Lin in
+                                           return (l1 @ l2)
+        | PAtPair(p1, p2), At(Tensor(t1, t2), i) -> let* l1 = getPatVar p1 (At(t1, i)) Lin in
+                                                    let* l2 = getPatVar p2 (At(t2, i)) Lin in
+                                                    return (l1 @ l2)
+        | PF p, F t -> getPatVar p t Int
+        | PAt (PVar x), At(t, i) -> return [(delayed x t i)]
+        | PPack(i, p), Exist(j, jt, t) -> let* l = getPatVar p (sub j (IVar i) t) Lin in
+                                          return ((int i (IndxT jt))::l)
+        | PAnnot(p, t'), t -> if t=t' then getPatVar p t Lin
+                              else error (fstring "Type mismatch in pattern %s with %s" (printpat p) (printtype t))
+        | _, _ -> error (fstring "Can't pattern match %s with %s" (printpat p) (printtype t))
+    else
+        match p with
+        | PVar x -> return [int x t]
+        | PAnnot(p, t') -> if t=t' then getPatVar p t Int
+                           else error (fstring "Type mismatch in pattern %s with %s" (printpat p) (printtype t))
+        | _ -> error (fstring "Can't pattern match %s with %s" (printpat p) (printtype t))
+    
 
 let rec check (e: expr) (t: typ) (ent: ent) : expr t = print_endline (fstring "Checking %s against %s in %s" (printexpr e) (printtype t) (printent ent));
     match e, t, ent with
     | Indx(Time _), IndxT TTime, Ind -> return e
     | Indx(Id _), IndxT TId, Ind -> return e
     | Indx(IVar x), IndxT _, Ind -> let* s = lookup x in if s.typ = t then return e else raise UnexpectedError
+    | Let(p, e1, e2), t , ent -> let* t1, ef1 = infer e1 ent in 
+                                 let* l = getPatVar p t1 ent in
+                                 let* ef2 = withvars l (check e2 t ent) in
+                                 return (Let(p, ef1, ef2))
     | Lambda (x, e'), Loli (t1, t2), Lin -> let* ef = withvar (fresh x t1) (check e' t2 Lin) in return(Lambda(x, ef))
     | Lambda (x, e'), Arrow (t1, t2), Int -> let* ef = withvar (int x t1) (check e' t2 Int) in return(Lambda(x, ef))
     | Pair (e1, e2), Tensor (t1, t2), Lin -> let* ef1 = check e1 t1 Lin in let* ef2 = check e2 t2 Lin in return(Pair(ef1, ef2))
     | Pair (e1, e2), Prod (t1, t2), Int -> let* ef1 = check e1 t1 Int in let* ef2 = check e2 t2 Int in return(Pair(ef1, ef2))
-    | Unpair (x1, x2, e1, e2), _, Lin -> let* t1, t2, ef1 = infer e1 Lin >>> plsTensor in
-                                         let* ef2 = withvars ([fresh x1 t1; fresh x2 t2]) (check e2 t Lin) in return(Unpair(x1, x2, ef1, ef2))
+    (* | Unpair (x1, x2, e1, e2), _, Lin -> let* t1, t2, ef1 = infer e1 Lin >>> plsTensor in
+                                         let* ef2 = withvars ([fresh x1 t1; fresh x2 t2]) (check e2 t Lin) in return(Unpair(x1, x2, ef1, ef2)) *)
     | L(e'), LSum(t1, t2), Lin -> let* ef = check e' t1 Lin in return(L ef)
     | R(e'), LSum(t1, t2), Lin -> let* ef = check e' t2 Lin in return(R ef)
     | L(e'), ISum(t1, t2), Int -> let* ef = check e' t1 Int in return(L ef)
@@ -126,24 +156,24 @@ let rec check (e: expr) (t: typ) (ent: ent) : expr t = print_endline (fstring "C
                                             let* ef1 = withvar (int x1 t1) (check e1 t Int) in
                                             let* ef2 = set ctx >> (*is this necessary?*) withvar (int x2 t2) (check e2 t Int)
                                             in return(Case(ef', x1, ef1, x2, ef2))
-    | LetF (x, e1, e2), _, Lin -> let* t', ef1 = infer e1 Lin >>> plsF in
+    (* | LetF (x, e1, e2), _, Lin -> let* t', ef1 = infer e1 Lin >>> plsF in
                                   let* ef2 = withvar (int x t') (check e2 t Lin) in
-                                  return(LetF(x, ef1, ef2))
+                                  return(LetF(x, ef1, ef2)) *)
     | EG(e'), G(t'), Int -> let* ef' = nolin (check e' t' Lin) in return (EG ef')
     | EEvt(e'), Evt(t'), Lin -> let* ef' = check e' t' Lin in return (EEvt ef')
     | LetEvt(x, e1, e2), Evt(_), Lin -> let* t1, ef1 = infer e1 Lin >>> plsEvt in
                                         let* ef2 = nolin (withvar (fresh x t1) (check e2 t Lin)) in
                                         return (LetEvt(x, ef1, ef2))
-    | Let(x, e1, e2), _, ent -> let* t', ef1 = infer e1 ent in 
+    (* | Let(x, e1, e2), _, ent -> let* t', ef1 = infer e1 ent in 
                                 let s = (match ent with
                                         | Lin -> fresh x t'
                                         | Int -> int x t'
                                         | Ind -> failwith "TODO: error not allowed") in
                                 let* ef2 = withvar s (check e2 t ent) in
-                                return(Let(x, ef1, ef2))
-    | LetUnit(e1, e2), _, Lin -> let* ef1 = check e1 LUnit Lin in
+                                return(Let(x, ef1, ef2)) *)
+    (* | LetUnit(e1, e2), _, Lin -> let* ef1 = check e1 LUnit Lin in
                                  let* ef2 = check e2 t Lin in
-                                 return(LetUnit(ef1, ef2))
+                                 return(LetUnit(ef1, ef2)) *)
     | LetFix(f, t', x, e1, e2), _, Lin -> (match t' with
                                           | Loli(a, b) -> let* ef1 = withvar (int f (G t')) (withonly [fresh x a] (check e1 b Lin)) in
                                                           let* ef2 = withvar (int f (G t')) (check e2 t Lin) in
@@ -177,18 +207,18 @@ let rec check (e: expr) (t: typ) (ent: ent) : expr t = print_endline (fstring "C
                                           let* ef2 = withvars [fresh x1 (At(t1, i)); fresh x2 (At(t2, i))] (check e2 t Lin) in
                                           return (AtUnpair(x1, x2, ef1, ef2))
     | LambdaIndx(i, e'), Univ(ti, it, t'), Lin  when i=ti-> let* ef' = withvar (int i (IndxT it)) (check e' t' Lin) in return (LambdaIndx(i, ef')) (*if diff, gen new name*)
-    | LetAt(x, e1, e2), _, Lin -> let* t', tau, ef1 = infer e1 Lin >>> plsAt in
+    (* | LetAt(x, e1, e2), _, Lin -> let* t', tau, ef1 = infer e1 Lin >>> plsAt in
                                   let* ef2 = withvar (delayed x t' tau) (check e2 t Lin) in
-                                  return (LetAt(x, ef1, ef2))
+                                  return (LetAt(x, ef1, ef2)) *)
     | Pack(i, e'), Exist(ti, it, t'), Lin -> let* _ = check (Indx i) (IndxT it) Ind in
                                              let* ef' = check e' (sub ti i t') Lin in
                                              return(Pack(i, ef'))
-    | LetPack(x1, x2, e1, e2), _, Lin -> let* x, it, t', ef1 = infer e1 Lin >>> plsExist in
+    (* | LetPack(x1, x2, e1, e2), _, Lin -> let* x, it, t', ef1 = infer e1 Lin >>> plsExist in
                                          let t'' = if (x = x1) then t'
                                                    else sub x (IVar x1) t'
                                          in
                                          let* ef2 = withvars [int x1 (IndxT it); fresh x2 t''] (check e2 t Lin) in
-                                         return(LetPack(x1, x2, ef1, ef2))
+                                         return(LetPack(x1, x2, ef1, ef2)) *)
     | Extern(f, t, s, e'), t', ent -> let* ef' = withvar (ext f t) (check e' t' ent) in return(Extern(f, t, s, ef'))
     | _, _, _ -> let* t', ef = infer e ent ~attempt:t in
                  if t=t' then return ef
@@ -250,4 +280,4 @@ and infer ?attempt (e: expr) (ent: ent) : (typ*expr) t = print_endline (fstring 
     | _ -> match attempt with
            | None   -> error (fstring "Can't infer type of %s" (printexpr e))
            | Some t -> error (fstring "Can't check %s against %s" (printexpr e) (printtype t)))
-    in print_endline (fstring "Infered %s as %s" (printexpr e) (printtype res)); return (res, ef)
+    in let () = print_endline (fstring "Infered %s as %s" (printexpr e) (printtype res)) in return ((res, ef))
