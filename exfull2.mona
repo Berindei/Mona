@@ -7,11 +7,11 @@
     let col: ♢((F Color) ⊗ ♢(F Color)) = (sequence x ← clk1; y ← clk2 st
               | when x → (let () = x in
                          let cl1 = F (Red) in
-                         let cl2: ♢(F Color) = (let evt(un) = y in let () = un in evt(F (Blue))) in
+                         let cl2: ♢(F Color) = (let evt(()) = y in evt(F (Blue))) in
                          evt((cl1, cl2)))
               | when y → (let () = y in
                          let cl1 = F (Green) in
-                         let cl2: ♢(F Color) = (let evt(un) = x in let () = un in evt(F (Yellow))) in
+                         let cl2: ♢(F Color) = (let evt(()) = x in evt(F (Yellow))) in
                          evt((cl1, cl2)))) in
     let pack(n, colat) = out col in
     let @((@coltnow), (@coltthen)) = colat in

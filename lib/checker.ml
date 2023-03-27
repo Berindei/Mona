@@ -164,9 +164,10 @@ let rec check (e: expr) (t: typ) (ent: ent) : expr t = print_endline (fstring "C
                                   return(LetF(x, ef1, ef2)) *)
     | EG(e'), G(t'), Int -> let* ef' = nolin (check e' t' Lin) in return (EG ef')
     | EEvt(e'), Evt(t'), Lin -> let* ef' = check e' t' Lin in return (EEvt ef')
-    | LetEvt(x, e1, e2), Evt(_), Lin -> let* t1, ef1 = infer e1 Lin >>> plsEvt in
-                                        let* ef2 = nolin (withvar (fresh x t1) (check e2 t Lin)) in
-                                        return (LetEvt(x, ef1, ef2))
+    | LetEvt(p, e1, e2), Evt(_), Lin -> let* t1, ef1 = infer e1 Lin >>> plsEvt in
+                                        let* l = getPatVar p t1 Lin in
+                                        let* ef2 = nolin (withvars l (check e2 t Lin)) in
+                                        return (LetEvt(p, ef1, ef2))
     (* | Let(x, e1, e2), _, ent -> let* t', ef1 = infer e1 ent in 
                                 let s = (match ent with
                                         | Lin -> fresh x t'

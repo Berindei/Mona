@@ -40,17 +40,14 @@ function main(){return (
   g = (function(){
   var chan = new Channel();
   var g = (_y);
-  var f = (_un => (
-(function(){
-  g = _un
-  return (function (){
-  return ((function(){
+  function f(){
+    return ((function(){
   var chan = new Channel();
   chan.put((function(){return (_blue)})());
   return curriedget(chan);
 })())
-})()})()));
-  g( x => f(x)(y => chan.put(y)) );
+  };
+  g( x => f()(y => chan.put(y)) );
   return curriedget(chan);
 })()
   return (function (_cl2){
@@ -75,17 +72,14 @@ function main(){return (
   g = (function(){
   var chan = new Channel();
   var g = (_x);
-  var f = (_un => (
-(function(){
-  g = _un
-  return (function (){
-  return ((function(){
+  function f(){
+    return ((function(){
   var chan = new Channel();
   chan.put((function(){return (_yellow)})());
   return curriedget(chan);
 })())
-})()})()));
-  g( x => f(x)(y => chan.put(y)) );
+  };
+  g( x => f()(y => chan.put(y)) );
   return curriedget(chan);
 })()
   return (function (_cl2){

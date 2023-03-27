@@ -85,7 +85,7 @@ lete:
     //| LET; UNIT EQ e1=expr IN e2=expr                                                                                  { LetUnit(e1, e2) }
     //| LET; F; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                 { LetF(x, e1, e2) }
     //| LET; LPARAN; x = ID; COMMA; y = ID; RPARAN; EQ; e1 = expr; IN; e2 = expr                                         { Unpair(x, y, e1, e2) }
-    | LET; EVT; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                               { LetEvt(x, e1, e2) }
+    | LET; EVT; x = pat; EQ; e1 = expr; IN; e2 = expr                                                                { LetEvt(x, e1, e2) }
     //| LET; AT; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                { LetAt(x, e1, e2) }
     //| LET PACK LPARAN x=ID COMMA y=ID RPARAN EQ e1=expr IN e2=expr                                                     { LetPack(x, y, e1, e2) }
     | LET EXTERN x=ID COLON t=typ EQ s=STRING IN e=expr                                                                { Extern(x, t, s, e) }

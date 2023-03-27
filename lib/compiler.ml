@@ -75,7 +75,7 @@ let rec fv e =
   (* | LetF(x, e1, e2) -> minus ((fv e1) @ (fv e2)) x *)
   | Run(e1) -> fv e1
   | EEvt(e1) -> fv e1
-  | LetEvt(x, e1, e2) -> minus ((fv e1) @ (fv e2)) x
+  | LetEvt(p, e1, e2) -> List.fold_left minus ((fv e1) @ (fv e2)) (vars p)
   | Select(x, y, e1, e2, e3, e4) -> minus (minus ((fv e1) @ (fv e2) @ (fv e3) @ (fv e4)) x) y
   | EAt(e1) -> []
   (* | LetAt(x, e1, e2) -> minus ((fv e1) @ (fv e2)) x *)
@@ -148,15 +148,18 @@ let rec compile e : string t=
   chan.put(%s);
   return curriedget(chan);
 })()" e1')
-  | LetEvt(x, e1, e2) -> let* e1' = compile e1 in 
+  | LetEvt(p, e1, e2) -> let* e1' = compile e1 in 
                          let* e2' = compile e2 in
+                         let params, accs = buildParamStrings p "x" in
                          return (fstring "(function(){
   var chan = new Channel();
   var g = (%s);
-  var f = (%s => (%s));
-  g( x => f(x)(y => chan.put(y)) );
+  function f(%s){
+    return (%s)
+  };
+  g( x => f(%s)(y => chan.put(y)) );
   return curriedget(chan);
-})()" e1' x e2')
+})()" e1' params e2' accs)
   | Select(x, y, e1, e2, e3, e4) -> let* e1' = compile e1 in
                                     let* e2' = compile e2 in
                                     let* e3' = compile e3 in 

@@ -117,7 +117,7 @@ type expr =
     | Run           of expr
     (* | LetF          of var * expr * expr *)
     | EEvt          of expr
-    | LetEvt        of var * expr * expr
+    | LetEvt        of pat * expr * expr
     (* | Let           of var * expr * expr *)
     | Select        of var * var * expr * expr * expr * expr
     | EAt           of expr
@@ -157,7 +157,7 @@ let rec printexpr e =
     | Run e'                          -> fstring "run(%s)" (printexpr e')
     (* | LetF (x, e1, e2)                -> fstring "let F(%s) = %s in %s" x (printexpr e1) (printexpr e2) *)
     | EEvt e'                         -> fstring "evt(%s)" (printexpr e')
-    | LetEvt (x, e1, e2)              -> fstring "let evt(%s) = %s in %s" x (printexpr e1) (printexpr e2)
+    | LetEvt (p, e1, e2)              -> fstring "let evt(%s) = %s in %s" (printpat p) (printexpr e1) (printexpr e2)
     (* | Let (x, e1, e2)                 -> fstring "let %s = %s in %s" x (printexpr e1) (printexpr e2) *)
     | Select (x1, x2, e1, e2, e3, e4) -> fstring "(from {%s←%s; %s←%s} select %s→%s | %s→%s)" x1 (printexpr e1) x2 (printexpr e2) x1 (printexpr e3) x2 (printexpr e4)
     | EAt e'                          -> fstring "@(%s)" (printexpr e')
