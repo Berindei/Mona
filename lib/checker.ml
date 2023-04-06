@@ -125,6 +125,17 @@ let rec getPatVar p t ent=
                            else error (fstring "Type mismatch in pattern %s with %s" (printpat p) (printtype t))
         | _ -> error (fstring "Can't pattern match %s with %s" (printpat p) (printtype t))
     
+let rec elevateT (l: 'a t list) : 'a list t =
+    match l with
+    | []      -> return []
+    | x :: xs -> let* x' = x in 
+                 let* xs' = elevateT xs in (return (x'::xs'))
+
+let rec selectVarList l x =
+    match l with
+    | [] -> []
+    | (y, t) :: ys when y=x -> (fresh y t) :: (selectVarList ys x)
+    | (y, t) :: ys          -> (fresh y (Evt t)) :: (selectVarList ys x)
 
 let rec check (e: expr) (t: typ) (ent: ent) : expr t = print_endline (fstring "Checking %s against %s in %s" (printexpr e) (printtype t) (printent ent));
     match e, t, ent with
@@ -145,20 +156,24 @@ let rec check (e: expr) (t: typ) (ent: ent) : expr t = print_endline (fstring "C
     | R(e'), LSum(t1, t2), Lin -> let* ef = check e' t2 Lin in return(R ef)
     | L(e'), ISum(t1, t2), Int -> let* ef = check e' t1 Int in return(L ef)
     | R(e'), ISum(t1, t2), Int -> let* ef = check e' t2 Int in return(R ef)
-    | Case (e', x1, e1, x2, e2), _ , Lin -> let* t1, t2, ef' = infer e' Lin >>> plsLSum in
+    | Case (e', p1, e1, p2, e2), _ , Lin -> let* t1, t2, ef' = infer e' Lin >>> plsLSum in
                                             let* ctx = get in
-                                            let* ef1 = withvar (fresh x1 t1) (check e1 t Lin) in
+                                            let* vl1 = getPatVar p1 t1 Lin in
+                                            let* vl2 = getPatVar p2 t2 Lin in
+                                            let* ef1 = withvars vl1 (check e1 t Lin) in
                                             let* ctx1 = get in
-                                            let* ef2 = set ctx >> withvar (fresh x2 t2) (check e2 t Lin) in
+                                            let* ef2 = set ctx >> withvars vl2 (check e2 t Lin) in
                                             let* ctx2 = get in
-                                            same ctx1 ctx2 >> return(Case(ef', x1, ef1, x2, ef2))
+                                            same ctx1 ctx2 >> return(Case(ef', p1, ef1, p2, ef2))
                                             (* if same ctx1 ctx2 then return () (*make same also monadic and make it error with a diff*)
                                                                 else error (fstring "Different resulting contexts in linear case statement %s:\n%s\n%s" (printexpr e) (printctx ctx1) (printctx ctx2))                                        *)
-    | Case (e', x1, e1, x2, e2), _ , Int -> let* t1, t2, ef' = infer e' Int >>> plsISum in
+    | Case (e', p1, e1, p2, e2), _ , Int -> let* t1, t2, ef' = infer e' Int >>> plsISum in
                                             let* ctx = get in
-                                            let* ef1 = withvar (int x1 t1) (check e1 t Int) in
-                                            let* ef2 = set ctx >> (*is this necessary?*) withvar (int x2 t2) (check e2 t Int)
-                                            in return(Case(ef', x1, ef1, x2, ef2))
+                                            let* vl1 = getPatVar p1 t1 Int in
+                                            let* vl2 = getPatVar p2 t2 Int in
+                                            let* ef1 = withvars vl1 (check e1 t Int) in
+                                            let* ef2 = set ctx >> (*is this necessary?*) withvars vl2 (check e2 t Int)
+                                            in return(Case(ef', p1, ef1, p2, ef2))
     (* | LetF (x, e1, e2), _, Lin -> let* t', ef1 = infer e1 Lin >>> plsF in
                                   let* ef2 = withvar (int x t') (check e2 t Lin) in
                                   return(LetF(x, ef1, ef2)) *)
@@ -194,7 +209,20 @@ let rec check (e: expr) (t: typ) (ent: ent) : expr t = print_endline (fstring "C
                                           let* ef1 = withvars [(int f t'); (int x a)] (check e1 b Int) in
                                           let* ef2 = withvar (int f t') (check e2 t Int) in
                                           return(LetFix(f, t', x, e1, e2))
-    | Select(x1, x2, e1, e2, e1', e2'), Evt(t'), Lin -> let* t1, ef1 = infer e1 Lin >>> plsEvt in
+    | Select (l1, l2), Evt t', Lin -> let l' = List.map (fun (x, e') -> let* t1, ef1 = infer e' Lin >>> plsEvt in (return ((x, t1), (x, ef1)))) l1 in
+                                      let* l3, lf1 = (let* l'' = elevateT l' in return (List.split l'')) in
+                                      let* lf2 = nolin(
+                                          let* ctx = get in
+                                          let l' = List.map (fun (x, e') -> 
+                                                let vl = selectVarList l3 x in
+                                                let* ef = withvars vl (check e' t Lin) in
+                                                let* ctx' = get in
+                                                return ((x, ef), ctx')                 
+                                          ) l2 in
+                                          let* efs, ctxs = (let* l'' = elevateT l' in return (List.split l'')) in
+                                          allsame ctxs >> return efs
+                                      ) in return (Select(lf1, lf2))
+    (* | Select(x1, x2, e1, e2, e1', e2'), Evt(t'), Lin -> let* t1, ef1 = infer e1 Lin >>> plsEvt in
                                                         let* t2, ef2 = infer e2 Lin >>> plsEvt in
                                                         let* ef1', ef2' = nolin ( let* ctx = get in
                                                                                   let* ef1' = withvars ([fresh x1 t1; fresh x2 (Evt(t2))]) (check e1' t Lin) in
@@ -203,7 +231,7 @@ let rec check (e: expr) (t: typ) (ent: ent) : expr t = print_endline (fstring "C
                                                                                   let* ctx2 = get in
                                                                                   same ctx1 ctx2 >> return(ef1', ef2')) in return(Select(x1, x2, ef1, ef2, ef1', ef2'))
                                                                 (* if same ctx1 ctx2 then return ()
-                                                                                else error (fstring "Different resulting contexts in select statement %s" (printexpr e)))                                                         *)
+                                                                                else error (fstring "Different resulting contexts in select statement %s" (printexpr e)))                                                         *) *)
     | EAt(e')(*might want to add time to expr but not necessary*), At(t', i), Lin -> let* _ = check (Indx i) (IndxT TTime) Ind in
                                                                                      let* ef' = delay i (check e' t' Lin) in return (EAt ef')
     | AtUnpair(p1, p2, e1, e2), _, Lin -> let* t', ef1 = infer e1 Lin in

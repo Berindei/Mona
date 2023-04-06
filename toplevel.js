@@ -32,6 +32,22 @@ let _mkButton = (unit => {
     return b;
 })
 
+let _mkText = (unit => {
+    return document.createElement("div");
+})
+
+let _mkOList = (unit => {
+    return document.createElement("ol");
+})
+
+let _mkUList = (unit => {
+    return document.createElement("ul");
+})
+
+let _mkListItem = (unit => {
+    return document.createElement("li");
+})
+
 let _onClick = (id => widget => {
     return [widget, function(cb){return widget.addEventListener("click", cb, {once: true})}];
 })

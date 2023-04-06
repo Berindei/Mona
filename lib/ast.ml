@@ -109,7 +109,7 @@ type expr =
     | Annot         of expr * typ
     | L             of expr
     | R             of expr
-    | Case          of expr * var * expr * var * expr
+    | Case          of expr * pat * expr * pat * expr
     | Proj1         of expr
     | Proj2         of expr
     | EF            of expr
@@ -119,7 +119,7 @@ type expr =
     | EEvt          of expr
     | LetEvt        of pat * expr * expr
     (* | Let           of var * expr * expr *)
-    | Select        of var * var * expr * expr * expr * expr
+    | Select        of (var * expr) list * (var * expr) list
     | EAt           of expr
     (* | LetAt         of var * expr * expr *)
     | LambdaIndx    of var * expr
@@ -149,7 +149,7 @@ let rec printexpr e =
     | Annot (e', t)                   -> fstring "(%s: %s)" (printexpr e') (printtype t)
     | L e'                            -> fstring "L(%s)" (printexpr e')
     | R e'                            -> fstring "R(%s)" (printexpr e')
-    | Case (e', x1, e1, x2, e2)       -> fstring "case(%s, L(%s)->%s, R(%s)->%s)" (printexpr e') x1 (printexpr e1) x2 (printexpr e2)
+    | Case (e', x1, e1, x2, e2)       -> fstring "case(%s, L(%s)->%s, R(%s)->%s)" (printexpr e') (printpat x1) (printexpr e1) (printpat x2) (printexpr e2)
     | Proj1 e'                        -> fstring "π1(%s)" (printexpr e')
     | Proj2 e'                        -> fstring "π2(%s)" (printexpr e')
     | EF e'                           -> fstring "F(%s)" (printexpr e')
@@ -159,7 +159,8 @@ let rec printexpr e =
     | EEvt e'                         -> fstring "evt(%s)" (printexpr e')
     | LetEvt (p, e1, e2)              -> fstring "let evt(%s) = %s in %s" (printpat p) (printexpr e1) (printexpr e2)
     (* | Let (x, e1, e2)                 -> fstring "let %s = %s in %s" x (printexpr e1) (printexpr e2) *)
-    | Select (x1, x2, e1, e2, e3, e4) -> fstring "(from {%s←%s; %s←%s} select %s→%s | %s→%s)" x1 (printexpr e1) x2 (printexpr e2) x1 (printexpr e3) x2 (printexpr e4)
+    | Select (l1, l2)                 -> fstring "(from {%s} select %s)" (List.fold_left (fun sb (x, e1) -> fstring "%s;%s←%s" sb x (printexpr e1)) "" l1)
+                                                                         (List.fold_left (fun sb (x, e2) -> fstring "%s|when %s→%s" sb x (printexpr e2)) "" l2)
     | EAt e'                          -> fstring "@(%s)" (printexpr e')
     (* | LetAt (x, e1, e2)               -> fstring "let @%s = %s in %s" x (printexpr e1) (printexpr e2) *)
     | LambdaIndx (x, e')              -> fstring "Λ%s. %S" x (printexpr e')

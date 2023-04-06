@@ -1,12 +1,44 @@
 %{
     open Ast
+
+    let pairexprs me1 me2 = 
+        match me1, me2 with
+        | None, None -> failwith "Empty expression"
+        | Some e1, None -> e1
+        | None, Some e2 -> e2
+        | Some e1, Some e2 -> Pair(e1, e2)
+    
+    let mkseq (bind, br) = 
+        let rec constr bind br = 
+            match bind with
+            | (x, e) :: xs ->
+                let e' = List.assoc x br in
+                let br' = List.remove_assoc x br in
+                let e1, e2 = constr xs br' in
+                ((x, e) :: e1 , (x, e') :: e2)
+            | [] ->
+                match br with
+                | [] -> [], []
+                | _  -> failwith "Too many arguments in sequencing"
+        in
+        let l1, l2 = constr bind br in
+        Select(l1, l2)
+
+    let mklambda (x, e) = List.fold_right (fun x e' -> Lambda(x, e')) x e
+
+    let mkblambda (x, e) = List.fold_right (fun x e' -> LambdaIndx(x, e')) x e
+
+    let mkuniv (xs, t) = List.fold_right (fun (x, i) e' -> Univ(x, i, e')) xs t
+
+    let mkexist (xs, t) = List.fold_right (fun (x, i) e' -> Exist(x, i, e')) xs t
+                          
 %}
 
 %token <string> ID
 %token <int> NUM
 %token <string> STRING
 %token <char> CHAR
-%token UNIT IUNIT LUNIT
+%token IUNIT LUNIT
 %token LAMBDA BLAMBDA
 %token LPARAN RPARAN
 %token DOT COLON COMMA BAR SEMICOLON
@@ -30,120 +62,190 @@
 %token OUT INTO
 %token COLOR
 %token TNUM TSTRING TCHAR
+%token LBRACE RBRACE FOR
 %token EOF
 
 %start <Ast.expr> prog
 
-%left LEFTASSOC 
+%start <Ast.typ> test_typ
+
+%nonassoc Low
+%nonassoc COMMA
+%right BAR
+%right COLON
+
+%nonassoc Below_Func
+%right RARROW LOLI
 
 %%
 
-prog:
-    | e = expr; EOF { e }
-    ;
+let test_typ:=
+    | ~=typ; EOF; <>
 
-expr:
-    | x = ID                                                                                                           { Var x }
-    | UNIT                                                                                                             { EUnit }
-    | s = STRING                                                                                                       { EString s }
-    | c = CHAR                                                                                                         { EChar c }
-    | n = NUM                                                                                                          { ENum n }
-    | LAMBDA; x = ID; DOT; e = expr                                                                                    { Lambda(x, e) }
-    | BLAMBDA; i = ID; DOT; e = expr                                                                                   { LambdaIndx(i, e) }
-    | e1 = expr; e2 = expr                                                                                             { App(e1, e2) }
-    | e = expr; COLON; t = typ                                                                                         { Annot(e, t) }
-    | CASE; LPARAN; e = expr; COMMA; L; x = paranv; RARROW; e1 = expr; COMMA; R; y = paranv; RARROW; e2 = expr; RPARAN { Case(e, x, e1, y, e2) }
-    | e1 = expr; COMMA; e2 = expr                                                                                      { Pair(e1, e2) }
-    | SEQ; x = ID; LARROW; e1 = expr; SEMICOLON; y = ID; LARROW; e2 = expr; ST; BAR WHEN a = ID; RARROW; e3 = expr; BAR WHEN b = ID; RARROW e4 = expr { if a=x && b=y then Select(x, y, e1, e2, e3, e4)
-                                                                                                                                             else if a=y && b=x then Select(x, y, e1, e2, e3, e4)
-                                                                                                                                             else failwith "parsing error"}
-    | PACK LPARAN x=ID COMMA y=expr RPARAN                                                                             { Pack((IVar x), y) }
-    | e = lete                                                                                                         { e }
-    | e = funclike                                                                                                     { e }
-    | e = parane                                                                                                       { e }
-    ;
+let prog:=
+    | ~=exp; EOF; <>
 
-funclike:
-    | L; e = expr                                                                                                    { L(e) }
-    | R; e = expr                                                                                                    { R(e) }
-    | F; e = expr                                                                                                    { EF(e) }
-    | G; e = expr                                                                                                    { EG(e) }
-    | P1; e = expr                                                                                                   { Proj1(e) }
-    | P2; e = expr                                                                                                   { Proj2(e) }
-    | RUN; e = expr                                                                                                  { Run(e) }
-    | EVT; e = expr                                                                                                  { EEvt(e) }
-    | AT; e = expr                                                                                                   { EAt e }
-    | OUT; e = expr                                                                                                  { Out e }
-    | INTO; e = expr                                                                                                 { Into e }
-    ;
+let unit == LPARAN; RPARAN
 
-lete:
-    | LET p=pat EQ e1=expr IN e2=expr                                                                                { match p with PAnnot(p', t) -> Let(p', Annot(e1, t), e2) | _ -> Let(p, e1, e2)}
-    //| LET; x = ID; COLON; t = typ; EQ; e1 = expr; IN; e2 = expr                                                        { Let(x, Annot(e1, t), e2) }
-    | LET AT LPARAN p1 = pat COMMA p2 = pat RPARAN EQ e1 = expr IN e2 = expr                                         { AtUnpair(p1, p2, e1, e2) }
-    //| LET; x = ID; EQ; e1 = expr; IN; e2 = expr                                                                        { Let(x, e1, e2) }
-    //| LET; UNIT EQ e1=expr IN e2=expr                                                                                  { LetUnit(e1, e2) }
-    //| LET; F; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                 { LetF(x, e1, e2) }
-    //| LET; LPARAN; x = ID; COMMA; y = ID; RPARAN; EQ; e1 = expr; IN; e2 = expr                                         { Unpair(x, y, e1, e2) }
-    | LET; EVT; x = pat; EQ; e1 = expr; IN; e2 = expr                                                                { LetEvt(x, e1, e2) }
-    //| LET; AT; x = paranv; EQ; e1 = expr; IN; e2 = expr                                                                { LetAt(x, e1, e2) }
-    //| LET PACK LPARAN x=ID COMMA y=ID RPARAN EQ e1=expr IN e2=expr                                                     { LetPack(x, y, e1, e2) }
-    | LET EXTERN x=ID COLON t=typ EQ s=STRING IN e=expr                                                                { Extern(x, t, s, e) }
-    | LET FIX f=ID COLON LPARAN t=typ RPARAN x=ID DOT e1=expr IN e2=expr                                               { LetFix(f, t, x, e1, e2) }
-    ;
+let exp_atom:=
+    | ~=unary_exp; <>
+    | ~=nullary_exp; <>
+    | LPARAN; ~=exp; RPARAN;               <>
+    | LPARAN; e1=exp; COMMA; e2=exp; RPARAN; <Pair>
 
-paranv:
-    | x = ID                 {x}
-    | LPARAN; x = ID; RPARAN {x}
-    ;
+let exp_atom_list:=
+    | ~=exp_atom_list; ~=exp_atom; <App>
+    | ~=exp_atom; <>
 
-parane:
-    | LPARAN; e = expr; RPARAN {e}
-    ;
+let exp_app:=
+    | ~=exp_atom_list;    <>
 
-typ:
-    | x = ID                                                     { TVar x }
-    | IUNIT                                                      { IUnit }
-    | LUNIT                                                      { LUnit }
-    | COLOR                                                      { Color }
-    | TSTRING                                                    { String }
-    | TCHAR                                                      { Char }
-    | TNUM                                                       { Num }
-    | t1 = typ; RARROW; t2 = typ                                 { Arrow(t1, t2) }
-    | t1 = typ; LOLI; t2 = typ                                   { Loli(t1, t2) }
-    | t1 = typ; TIMES; t2 = typ                                  { Prod(t1, t2) }
-    | t1 = typ; TENSOR; t2 = typ                                 { Tensor(t1, t2) }
-    | t1 = typ; PLUS; t2 = typ                                   { ISum(t1, t2) }
-    | t1 = typ; LPLUS; t2 = typ                                  { LSum(t1, t2) }
-    | DIAMOND; t = typ                                           { Evt t }
-    | t = typ; AT; i = ID                                        { At(t, (IVar i)) }
-    | UNIV LPARAN i = ID COLON it=indxtype RPARAN DOT t = typ    { Univ(i, it, t) }
-    | EXIST LPARAN i = ID COLON it=indxtype RPARAN DOT t=typ     { Exist(i, it, t) }
-    | WIDGET i = ID                                              { Widget (IVar i)}
-    | PREFIX i = ID t = ID                                       { Prefix ((IVar i), (IVar t))}
-    | t = funcliket                                              { t }
-    | t = parant                                                 { t }
-    ;
+let unary_exp:=
+    | L; ~=exp_atom; <L>
+    | R; ~=exp_atom; <R>
+    | F; ~=exp_atom; <EF>
+    | G; ~=exp_atom; <EG>
+    | P1; ~=exp_atom; <Proj1>
+    | P2; ~=exp_atom; <Proj2>
+    | RUN; ~=exp_atom; <Run>
+    | EVT; LPARAN; ~=exp_atom; RPARAN; <EEvt>
+    | AT; ~=exp_atom; <EAt>
+    | OUT; ~=exp_atom; <Out>
+    | INTO; ~=exp_atom; <Into>
 
-parant:                                               
-    | LPARAN; t = typ; RPARAN                                    { t }
-    ;
+let nullary_exp:=
+    | ~=ID;                            <Var>
+    | unit;                            {EUnit}
+    | ~=STRING;                        <EString>
+    | ~=CHAR;                          <EChar>
+    | ~=NUM;                           <ENum>
 
-funcliket:
-    | F; t = typ                                                 { F t }
-    | G; t = typ                                                 { G t }
-    | DIAMOND; t = typ                                           { Evt t }
+let exp:=
+    | ~=exp_app;   <>
+    | ~=letexp;    <> %prec Low
+    | ~=lambdaexp; <> %prec Low
+    | ~=exp; COLON; ~=typ; <Annot>
+    | SEQ; ~=binderst; ST; ~=branchst;               <mkseq>
+    | FOR; w=ID; i=ID; COLON; LBRACE; 
+             cmds=cmdlist; RBRACE; e=exp;          {cmds w i e} %prec Low
+    | CASE; LPARAN; e1=exp; COMMA;
+                  L; p1=pat; RARROW; e2=exp; COMMA;
+                  R; p2=pat; RARROW; e3=exp; RPARAN; <Case>
+    | PACK; LPARAN; ~=indx; COMMA; ~=exp; RPARAN;      <Pack>
 
-indxtype:
-    | TIME { TTime }
-    | WID  { TId }
+let letexp==
+    | LET; ~=pat; EQ; e1=exp; IN; e2=exp;                          {match pat with PAnnot(p, t) -> Let(p, (Annot(e1, t)), e2) | _ -> Let(pat, e1, e2)}
+    | LET; EVT; ~=pat; EQ; e1=exp; IN; e2=exp;                     <LetEvt>
+    | LET; EXTERN; ~=ID; COLON; ~=typ; EQ; ~=STRING; IN; e2=exp;     <Extern>
+    | LET; FIX; ~=ID; COLON; ~=typ; ~=ID; DOT; e1=exp; IN; e2=exp; <LetFix>
 
-pat:
-    | LPARAN p=pat RPARAN                 { p }
-    | UNIT                                { PUnit }
-    | x=ID                                { PVar x }
-    | p=pat COLON t=typ                   { PAnnot(p, t) }
-    | F p=pat                             { PF p }
-    | AT p=pat                            { PAt p }
-    | PACK LPARAN x=ID COMMA p=pat RPARAN { PPack(x, p) }
-    | p1=pat COMMA p2=pat                 { PPair(p1, p2) }
+let lambdaexp==
+    | LAMBDA; ~=idlist; DOT; ~=exp;  <mklambda>
+    | BLAMBDA; ~=idlist; DOT; ~=exp; <mkblambda>
+
+let idlist:=
+    | ~=ID; ~=idlist; <(::)>
+    |                 {[]}
+
+let binderst:=
+    | SEMICOLON?; ~=binder; ~=binders; <(::)>
+
+let binders:=
+    | SEMICOLON; ~=binder; ~=binders; <(::)>
+    | SEMICOLON; ~=binder;            {[binder]}
+
+let binder:=
+    | ~=ID; LARROW; ~=exp; <> %prec Low
+
+let branchst:=
+    | BAR?; ~=branch; ~=branches; <(::)>
+
+let branches:=
+    | BAR; ~=branch; ~=branches; <(::)>
+    | BAR; ~=branch;             {[branch]}
+
+let branch:=
+    | WHEN; ~=ID; RARROW; ~=exp;  <> %prec Low
+
+let cmdlist:=
+    | ~=cmd;                    <>
+    | c=cmd; COMMA; cl=cmdlist; { (fun w -> fun i -> fun e -> c w i (cl w i e)) }
+
+let cmd:=
+    | p=pat; EQ; f=ID; LPARAN; e=exp?; RPARAN; { fun w i e' -> Let(PPair((PVar w), p), App(App(Var(f), Var(i)), pairexprs (Some(Var w)) e), e') }
+    | f=ID; LPARAN; e=exp?; RPARAN;            { fun w i e' -> Let(PVar w, App(App(Var(f), Var(i)), pairexprs (Some(Var w)) e), e') }
+
+let pat_atom:=
+    | unit; {PUnit}
+    | ~=ID; <PVar>
+    | LPARAN; ~=pat; RPARAN; <>
+
+let pat:=
+    | ~=pat_atom; <>
+    | p1=pat; COMMA; p2=pat; <PPair>
+    | ~=pat; COLON; ~=typ; <PAnnot>
+    | AT; ~=pat_atom; <PAt>
+    | F; ~=pat_atom; <PF>
+    | PACK; LPARAN; ~=ID; COMMA; ~=pat; RPARAN; <PPack>
+
+let indxidlistst:=
+    | ~=unit_indx_def; ~=indxidlist; <(::)>
+
+let indxidlist:=
+    | COMMA; ~=unit_indx_def; ~=indxidlist; <(::)>
+    | {[]}
+
+let unit_indx_def:=
+    | LPARAN; ~=unit_indx_def; RPARAN; <>
+    | ~=ID; COLON; ~=indxtyp;          <>
+
+let indxtyp:=
+    | TIME; {TTime}
+    | WID;  {TId}
+
+let indx:=
+    | ~=ID; <IVar>
+
+let typ:=
+    | ~=func_typ; <> 
+
+let func_typ:=
+    | UNIV; ~=indxidlistst; DOT; ~=typ;  <mkuniv>
+    | EXIST; ~=indxidlistst; DOT; ~=typ; <mkexist>
+    | ~=sum_typ; RARROW; ~=func_typ; <Arrow>
+    | ~=sum_typ; LOLI; ~=func_typ; <Loli>
+    | ~=sum_typ; <> %prec Below_Func
+
+let sum_typ:=
+    | t1=prod_typ; PLUS; t2=sum_typ;  <ISum>
+    | t1=prod_typ; LPLUS; t2=sum_typ; <LSum>
+    | ~=prod_typ; <>
+
+let prod_typ:=
+    | t1=at_typ; TIMES; t2=prod_typ;  <Prod>
+    | t1=at_typ; TENSOR; t2=prod_typ; <Tensor>
+    | ~=at_typ; <>
+
+let at_typ:=
+    | ~=at_typ; AT; ~=indx; <At>
+    | ~=tp_atom; <>
+
+let tp_atom:=
+    | ~=unary_tp;            <>
+    | ~=nullary_tp;           <>
+    | LPARAN; ~=typ; RPARAN; <>
+
+let nullary_tp:=
+    | LUNIT;   {LUnit}
+    | IUNIT;   {IUnit}
+    | COLOR;   {Color}
+    | TSTRING; {String}
+    | TCHAR;   {Char}
+    | TNUM;    {Num}
+    | WIDGET; ~=indx;       <Widget>
+    | PREFIX; i1=indx; i2=indx; <Prefix>
+
+let unary_tp==
+    | F; ~=tp_atom;       <F>
+    | G; ~=tp_atom;       <G>
+    | DIAMOND; ~=tp_atom; <Evt>

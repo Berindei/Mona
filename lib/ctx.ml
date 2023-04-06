@@ -108,3 +108,10 @@ let rec same (ctx1: ctx) (ctx2: ctx) : unit t =
                                    else error (fstring "Context mismatch at variable: %s; Only found in the first context" (printstate s))
     | [], []     -> return ()
     | [], s :: _      -> error (fstring "Context mismatch at variable: %s; Only found in the second context" (printstate s))
+
+let allsame (ctxl: ctx list) :unit t =
+    let* _ = (List.fold_left (fun ctxt ctx ->
+        let* ctx' = ctxt in
+        same ctx ctx' >> return ctx
+    ) (return (List.hd ctxl)) ctxl)
+    in return ()

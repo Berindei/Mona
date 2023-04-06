@@ -16,13 +16,10 @@ rule read =
     | white       { read lexbuf }
     | comment     { read lexbuf }
     | "Id"        { WID }
-    | "()"        { UNIT }
     | "I"         { LUNIT }
     | "1"         { IUNIT }
-    | "λ"         { LAMBDA }
-    | "fun"       { LAMBDA }
-    | "Λ"         { BLAMBDA }
-    | "Fun"       { BLAMBDA }
+    | "λ" | "fun" { LAMBDA }
+    | "Λ" | "Fun" { BLAMBDA }
     | "."         { DOT }
     | ","         { COMMA }
     | "|"         { BAR }
@@ -30,10 +27,8 @@ rule read =
     | "("         { LPARAN }
     | ")"         { RPARAN }
     | ":"         { COLON }
-    | "->"        { RARROW }
-    | "→"         { RARROW }
-    | "<-"        { LARROW }
-    | "←"         { LARROW }
+    | "->" | "→"  { RARROW }
+    | "<-" | "←"  { LARROW }
     | "let"       { LET }
     | "fix"       { FIX }
     | "L"         { L }
@@ -41,29 +36,23 @@ rule read =
     | "F"         { F }
     | "G"         { G }
     | "case"      { CASE }
-    | "π1"        { P1 }
-    | "fst"       { P1 }
-    | "π2"        { P2 }
-    | "snd"       { P2 }
+    | "π1" | "fst"{ P1 }
+    | "π2" | "snd"{ P2 }
     | "run"       { RUN }
     | "="         { EQ }
     | "in"        { IN }
-    | "⊸"        { LOLI }
-    | "-o"        { LOLI }
+    | "⊸" | "-o" { LOLI }
     | "*"         { TIMES }
-    | "⊗"        { TENSOR }
-    | "L*"        { TENSOR }
+    | "⊗" | "L*" { TENSOR }
     | "+"         { PLUS }
-    | "⊕"        { LPLUS }
-    | "L+"        { LPLUS }
+    | "⊕" | "L+" { LPLUS }
     | "evt"       { EVT }
     | "seq"       { SEQ }
     | "sequence"  { SEQ }
     | "when"      { WHEN }
     | "st"        { ST }
     | "such that" { ST }
-    | "♢"         { DIAMOND }
-    | "<>"        { DIAMOND }
+    | "♢" | "<>"  { DIAMOND }
     | "@"         { AT }
     | "pack"      { PACK }
     | "∀"         { UNIV }
@@ -78,6 +67,9 @@ rule read =
     | "String"    { TSTRING }
     | "Num"       { TNUM }
     | "Char"      { TCHAR }
+    | "{"         { LBRACE }
+    | "}"         { RBRACE }
+    | "for"       { FOR }
     | string      { let s = Lexing.lexeme lexbuf in let l = String.length s in STRING (String.sub s 1 (l-2))}
     | num         { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | char        { let s = Lexing.lexeme lexbuf in CHAR (String.get s 1) }

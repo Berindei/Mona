@@ -1,3 +1,10 @@
 (
-    let fix f: A⊸B x = case (x, )
-) : I@ala
+    let pack(i, btn) = mkButton () in
+    // kseljhfs
+    for btn i: {
+        setColor(F Red),
+        setText(F "Hihi"),
+        clk = onClick ()
+    }
+    btn
+) : Widget i

@@ -15,6 +15,12 @@ let add b = fun bl -> ((), b::bl)
 
 let get s = fun bl -> (List.assoc_opt s bl, bl)
 
+let rec elevateT (l: 'a t list) : 'a list t =
+  match l with
+  | []      -> return []
+  | x :: xs -> let* x' = x in 
+               let* xs' = elevateT xs in (return (x'::xs'))
+
 let rec buildParams p access = 
   match p with
   | PUnit -> []
@@ -67,7 +73,7 @@ let rec fv e =
   | Annot(e1, t) -> fv e1
   | L(e1) -> fv e1
   | R(e1) -> fv e1
-  | Case(e1, x1, e2, x2, e3) -> (fv e1) @ (minus (fv e2) x1) @ (minus (fv e3) x2)
+  | Case(e1, p1, e2, p2, e3) -> (fv e1) @ (List.fold_left minus (fv e2) (vars p1)) @ (List.fold_left minus (fv e3) (vars p2))
   | Proj1(e1) -> fv e1
   | Proj2(e1) -> fv e1
   | EF(e1) -> fv e1
@@ -76,7 +82,10 @@ let rec fv e =
   | Run(e1) -> fv e1
   | EEvt(e1) -> fv e1
   | LetEvt(p, e1, e2) -> List.fold_left minus ((fv e1) @ (fv e2)) (vars p)
-  | Select(x, y, e1, e2, e3, e4) -> minus (minus ((fv e1) @ (fv e2) @ (fv e3) @ (fv e4)) x) y
+  | Select(l1, l2) -> List.fold_left minus (
+                        List.fold_left (fun l1 l2 -> l1 @ (fv l2)) [] (List.map (fun (_, e) -> e) l1) @ 
+                        List.fold_left (fun l1 l2 -> l1 @ (fv l2)) [] (List.map (fun (_, e) -> e) l2)
+                      ) (List.map (fun (x,_) -> x) l1)
   | EAt(e1) -> []
   (* | LetAt(x, e1, e2) -> minus ((fv e1) @ (fv e2)) x *)
   | LambdaIndx(x, e1) -> fv e1
@@ -95,8 +104,40 @@ let rec constrchain l b =
   | []    -> fstring "chan.put(%s)" b
   | x::xs -> fstring "%s(%s=>{%s})" x x (constrchain xs b)
 
+let get_chans l =
+  let v = List.map fst l in
+  let body = List.fold_left (^) "" (List.map (fun x -> fstring "\"%s\": new Channel()," x) v) in
+  return (fstring "var chans = {%s}" body)
+
+let gen_f_params x l = List.fold_left (^) x (List.map ((^) ", ") (List.filter ((<>) x) l))
+let gen_f_accs x l = List.fold_left (^) "x" (List.map (fun x -> fstring ", curriedget(chans[\"%s\"])" x) (List.filter ((<>) x) l))
+
 let rec compile e : string t=
-  match e with
+
+  let get_gs l1 l2 =
+    let* l' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (x, e')) l1) in
+    let body = List.fold_left (^) "" (List.map (fun (x, e) -> fstring "\"%s\": (%s)," x e) l') in
+    let gs = fstring "var gs = {%s}" body in
+    let gapps = List.fold_left (^) ""
+      (List.map (fun (x, _) -> fstring
+      "gs[\"%s\"]( x=> {if(first){
+        first = false;
+        fs[\"%s\"](%s)(curriedput(finchan))
+      } else chans[\"%s\"].put(x)});\n" x x (gen_f_accs x (List.map fst l2)) x) l') in
+    return (gs, gapps)
+  in
+
+  let get_fs l = 
+    let* l' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (x, e')) l) in
+    let body = List.fold_left (^) ""
+      (List.map (fun (x, e) -> fstring
+        "\"%s\": function(%s){
+          return (%s)
+        },\n" x (gen_f_params x (List.map fst l')) e
+      ) l') in
+    return (fstring "var fs = {%s}" body)
+
+  in match e with
   | EUnit -> return "null"
   (* | LetUnit(e1, e2) -> compile (Let("kill", e1, e2)) *)
   | Var x -> let* j = get x in
@@ -125,15 +166,21 @@ let rec compile e : string t=
              return (fstring "{value: %s, tag:\"L\"}" e1')
   | R(e1) -> let* e1' = compile e1 in
              return (fstring "{value: %s, tag:\"R\"}" e1')
-  | Case(e1, x1, e2, x2, e3) -> let* e1' = compile e1 in let* e2' = compile e2 in let* e3' = compile e3 in
+  | Case(e1, p1, e2, p2, e3) -> let* e1' = compile e1 in let* e2' = compile e2 in let* e3' = compile e3 in
+                                let params1, accs1 = buildParamStrings p1 "sum.value" in
+                                let params2, accs2 = buildParamStrings p2 "sum.value" in
                                 return (fstring
 "(function(){
   var sum = (%s);
-  var f1 = function (%s) {return (%s)};
-  var f2 = function (%s) {return (%s)};
-  if(sum.tag==\"L\") return f1(sum.value);
-  else return f2(sum.value);
-})()" e1' x1 e2' x2 e3')
+  function f1(%s) {
+    return (%s)
+  };
+  function f2(%s) {
+    return (%s)
+  };
+  if(sum.tag==\"L\") return f1(%s);
+  else return f2(%s);
+})()" e1' params1 e2' params2 e3' accs1 accs2)
   | Proj1(e1) -> let* e1' = compile e1 in return (e1' ^ "[0]")
   | Proj2(e1) -> let* e1' = compile e1 in return (e1' ^ "[1]")
   | EF(e1) -> compile e1
@@ -160,7 +207,21 @@ let rec compile e : string t=
   g( x => f(%s)(y => chan.put(y)) );
   return curriedget(chan);
 })()" e1' params e2' accs)
-  | Select(x, y, e1, e2, e3, e4) -> let* e1' = compile e1 in
+  | Select (l1, l2) -> let* l1' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (x, e')) l1) in
+                       let* l2' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (x, e')) l2) in
+                       let* chans = get_chans l1 in
+                       let* gs, gcalled = get_gs l1 l2 in
+                       let* fs = get_fs l2 in
+                       return (fstring "(function (){
+  %s;
+  var finchan = new Channel();
+  %s;
+  %s;
+  var first = true;
+  %s;
+  return curriedget(finchan);
+})()" chans gs fs gcalled)
+  (* | Select(x, y, e1, e2, e3, e4) -> let* e1' = compile e1 in
                                     let* e2' = compile e2 in
                                     let* e3' = compile e3 in 
                                     let* e4' = compile e4 in
@@ -185,7 +246,7 @@ let rec compile e : string t=
     f2(b)(curriedget(newchan))(curriedput(finchan))
   } else chan.put(b)})
   return curriedget(finchan);
-})()" e1' e2' x y e3' y x e4') (*might need to use some atomic locks*)
+})()" e1' e2' x y e3' y x e4') might need to use some atomic locks *)
    (*cum credeam, nevoie de context to some degree*)
   | EAt(e1) -> let chain = List.map (fun (x, at) -> x) (List.filter (fun (x, at) -> not(at=(Time 0))) (fv e1)) in
                print_endline (printfvs (fv e1));
@@ -204,6 +265,7 @@ let rec compile e : string t=
   | Pack(e1, e2) -> let* e2' = compile e2 in
                     return (fstring "(function (){return (%s)})()" e2')
   (* | LetPack(i, x, e1, e2) -> compile (Let(i, EUnit, (Let(x, e1, e2)))) *)
+  | Let((PAt(PPair(p1, p2))), e1, e2) -> compile (AtUnpair(p1, p2, e1 , e2))
   | Let(p, e1, e2) -> let* e1' = compile e1 in
                       let* e2' = compile e2 in
                       let params, accs = buildParamStrings p "g" in

@@ -1,0 +1,182 @@
+%{
+    open Ast
+
+    let pairexprs me1 me2 = 
+        match me1, me2 with
+        | None, None -> failwith "Empty expression"
+        | Some e1, None -> e1
+        | None, Some e2 -> e2
+        | Some e1, Some e2 -> Pair(e1, e2)
+%}
+
+%token <string> ID
+%token <int> NUM
+%token <string> STRING
+%token <char> CHAR
+%token UNIT IUNIT LUNIT
+%token LAMBDA BLAMBDA
+%token LPARAN RPARAN
+%token DOT COLON COMMA BAR SEMICOLON
+%token RARROW LARROW LOLI
+%token LET IN EXTERN FIX
+%token L R
+%token CASE~
+%token P1 P2
+%token F G
+%token RUN
+%token EQ
+%token TIMES TENSOR
+%token PLUS LPLUS
+%token EVT SEQ ST WHEN
+%token DIAMOND
+%token AT
+%token PACK
+%token UNIV EXIST
+%token TIME WID
+%token WIDGET PREFIX
+%token OUT INTO
+%token COLOR
+%token TNUM TSTRING TCHAR
+%token LBRACE RBRACE FOR
+%token EOF
+
+%start <Ast.expr> prog
+
+%left ExprLoose
+%left Expr
+%left ExprTight
+%nonassoc ExprFunc
+%right STRING SEQ RUN R PACK P2 P1 OUT NUM LPARAN LET LAMBDA L INTO ID G FOR F EVT COMMA COLON CHAR CASE BLAMBDA AT
+
+%%
+
+prog:
+    | e = exprlist; EOF { e }
+    ; 
+
+unit:
+    | LPARAN RPARAN {}
+
+exprlist:
+    | e1=exprlist e2=expr { App(e1, e2) }
+    | e=expr              { e }
+
+expr:
+    | LAMBDA; x = ID; DOT; e = exprlist                                                                                    { Lambda(x, e) } %prec ExprLoose
+    | BLAMBDA; i = ID; DOT; e = exprlist                                                                                   { LambdaIndx(i, e) } %prec ExprLoose
+    | SEQ; x = ID; LARROW; e1 = exprlist; SEMICOLON; y = ID; LARROW; e2 = exprlist; ST; BAR WHEN a = ID; RARROW; e3 = exprlist; BAR WHEN b = ID; RARROW e4 = exprlist { if a=x && b=y then Select(x, y, e1, e2, e3, e4)
+                                                                                                                                             else if a=y && b=x then Select(x, y, e1, e2, e3, e4)
+                                                                                                                                             else failwith "parsing error"} %prec ExprLoose
+    | FOR w=ID i=ID COLON LBRACE cmds=cmdlist RBRACE e=exprlist                                                            { cmds w i e } %prec ExprLoose
+    | e = lete                                                                                                         { e } %prec ExprLoose
+
+    | x = ID                                                                                                           { Var x } %prec Expr
+    | unit                                                                                                             { EUnit } %prec Expr
+    | s = STRING                                                                                                       { EString s } %prec Expr
+    | c = CHAR                                                                                                         { EChar c } %prec Expr
+    | n = NUM                                                                                                          { ENum n } %prec Expr
+    | e = exprlist; COLON; t = typ                                                                                         { Annot(e, t) } %prec Expr
+    | CASE; LPARAN; e = exprlist; COMMA; L; x = paranv; RARROW; e1 = exprlist; COMMA; R; y = paranv; RARROW; e2 = exprlist; RPARAN { Case(e, x, e1, y, e2) } %prec Expr
+    | e1 = exprlist; COMMA; e2 = exprlist                                                                                      { Pair(e1, e2) } %prec Expr
+    | PACK LPARAN x=ID COMMA y=exprlist RPARAN                                                                             { Pack((IVar x), y) } %prec Expr
+    | e = funclike                                                                                                     { e } %prec Expr
+    | e = parane                                                                                                       { e } %prec Expr
+    ;
+
+funclike:
+    | L; e = exprlist                                                                                                    { L(e) } %prec ExprFunc
+    | R; e = exprlist                                                                                                    { R(e) } %prec ExprFunc
+    | F; e = exprlist                                                                                                    { EF(e) } %prec ExprFunc
+    | G; e = exprlist                                                                                                    { EG(e) } %prec ExprFunc
+    | P1; e = exprlist                                                                                                   { Proj1(e) } %prec ExprFunc
+    | P2; e = exprlist                                                                                                   { Proj2(e) } %prec ExprFunc
+    | RUN; e = exprlist                                                                                                  { Run(e) } %prec ExprFunc
+    | EVT; e = exprlist                                                                                                  { EEvt(e) } %prec ExprFunc
+    | AT; e = exprlist                                                                                                   { EAt e } %prec ExprFunc
+    | OUT; e = exprlist                                                                                                  { Out e } %prec ExprFunc
+    | INTO; e = exprlist                                                                                                 { Into e } %prec ExprFunc
+    ;
+
+lete:
+    | LET p=pat EQ e1=exprlist IN e2=exprlist                                                                                { match p with PAnnot(p', t) -> Let(p', Annot(e1, t), e2) | _ -> Let(p, e1, e2)}
+    //| LET; x = ID; COLON; t = typ; EQ; e1 = exprlist; IN; e2 = exprlist                                                        { Let(x, Annot(e1, t), e2) }
+    //| LET AT LPARAN p1 = pat COMMA p2 = pat RPARAN EQ e1 = exprlist IN e2 = exprlist                                         { AtUnpair(p1, p2, e1, e2) }
+    //| LET; x = ID; EQ; e1 = exprlist; IN; e2 = exprlist                                                                        { Let(x, e1, e2) }
+    //| LET; UNIT EQ e1=exprlist IN e2=exprlist                                                                                  { LetUnit(e1, e2) }
+    //| LET; F; x = paranv; EQ; e1 = exprlist; IN; e2 = exprlist                                                                 { LetF(x, e1, e2) }
+    //| LET; LPARAN; x = ID; COMMA; y = ID; RPARAN; EQ; e1 = exprlist; IN; e2 = exprlist                                         { Unpair(x, y, e1, e2) }
+    | LET; EVT; x = pat; EQ; e1 = exprlist; IN; e2 = exprlist                                                                { LetEvt(x, e1, e2) }
+    //| LET; AT; x = paranv; EQ; e1 = exprlist; IN; e2 = exprlist                                                                { LetAt(x, e1, e2) }
+    //| LET PACK LPARAN x=ID COMMA y=ID RPARAN EQ e1=exprlist IN e2=exprlist                                                     { LetPack(x, y, e1, e2) }
+    | LET EXTERN x=ID COLON t=typ EQ s=STRING IN e=exprlist                                                                { Extern(x, t, s, e) }
+    | LET FIX f=ID COLON LPARAN t=typ RPARAN x=ID DOT e1=exprlist IN e2=exprlist                                               { LetFix(f, t, x, e1, e2) }
+    ;
+
+paranv:
+    | x = ID                 {x}
+    | LPARAN; x = ID; RPARAN {x}
+    ;
+
+parane:
+    | LPARAN; e = exprlist; RPARAN {e}
+    ;
+
+typ:
+    | x = ID                                                     { TVar x }
+    | IUNIT                                                      { IUnit }
+    | LUNIT                                                      { LUnit }
+    | COLOR                                                      { Color }
+    | TSTRING                                                    { String }
+    | TCHAR                                                      { Char }
+    | TNUM                                                       { Num }
+    | t1 = typ; RARROW; t2 = typ                                 { Arrow(t1, t2) }
+    | t1 = typ; LOLI; t2 = typ                                   { Loli(t1, t2) }
+    | t1 = typ; TIMES; t2 = typ                                  { Prod(t1, t2) }
+    | t1 = typ; TENSOR; t2 = typ                                 { Tensor(t1, t2) }
+    | t1 = typ; PLUS; t2 = typ                                   { ISum(t1, t2) }
+    | t1 = typ; LPLUS; t2 = typ                                  { LSum(t1, t2) }
+    | DIAMOND; t = typ                                           { Evt t }
+    | t = typ; AT; i = ID                                        { At(t, (IVar i)) }
+    | UNIV LPARAN i = ID COLON it=indxtype RPARAN DOT t = typ    { Univ(i, it, t) }
+    | EXIST LPARAN i = ID COLON it=indxtype RPARAN DOT t=typ     { Exist(i, it, t) }
+    | WIDGET i = ID                                              { Widget (IVar i)}
+    | PREFIX i = ID t = ID                                       { Prefix ((IVar i), (IVar t))}
+    | t = funcliket                                              { t }
+    | t = parant                                                 { t }
+    ;
+
+parant:                                               
+    | LPARAN; t = typ; RPARAN                                    { t }
+    ;
+
+funcliket:
+    | F; t = typ                                                 { F t }
+    | G; t = typ                                                 { G t }
+    | DIAMOND; t = typ                                           { Evt t }
+
+indxtype:
+    | TIME { TTime }
+    | WID  { TId }
+
+pat:
+    | LPARAN p=pat RPARAN                 { p }
+    | unit                                { PUnit }
+    | x=ID                                { PVar x }
+    | p=pat COLON t=typ                   { PAnnot(p, t) }
+    | F p=pat                             { PF p }
+    | AT p=pat                            { PAt p }
+    | PACK LPARAN x=ID COMMA p=pat RPARAN { PPack(x, p) }
+    | p1=pat COMMA p2=pat                 { PPair(p1, p2) }
+
+
+cmdlist:
+    | c=cmd                  { c }
+    | c=cmd COMMA cl=cmdlist { (fun w -> fun i -> fun e -> c w i (cl w i e)) }
+
+maybeexpr:
+    | e = expr {Some e}
+    |          {None}
+
+cmd:
+    | p=pat EQ f=ID LPARAN e=maybeexpr RPARAN { fun w -> fun i -> fun e' -> Let(PPair((PVar w), p), App(App(Var(f), Var(i)), pairexprs (Some(Var w)) e), e') }
+    | f=ID LPARAN e=maybeexpr RPARAN          { fun w -> fun i -> fun e' -> Let(PVar w, App(App(Var(f), Var(i)), pairexprs (Some(Var w)) e), e') }

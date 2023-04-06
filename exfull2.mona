@@ -2,29 +2,44 @@
     let pack(i1, btn1) = mkButton () in
     let pack(i2, btn2) = mkButton () in
     let pack(ifin, btnfin) = mkButton () in
-    let (btn11, clk1) = (onClick i1) btn1 in
-    let (btn21, clk2) = (onClick i2) btn2 in
-    let col: ♢((F Color) ⊗ ♢(F Color)) = (sequence x ← clk1; y ← clk2 st
+
+    for btn1 i1: {
+        setText(F "Buton1"),
+        setColor(F Red),
+        clk1 = onClick()
+    }
+    
+    for btn2 i2: {
+        setText(F "Buton2"),
+        setColor(F Green),
+        clk2 = onClick()
+    }
+
+    for btnfin ifin: {
+        setText(F "Buton final")
+    }
+
+    let col: ♢(F Color ⊗ ♢ F Color) = (sequence x ← clk1; y ← clk2 st
               | when x → (let () = x in
-                         let cl1 = F (Red) in
-                         let cl2: ♢(F Color) = (let evt(()) = y in evt(F (Blue))) in
+                         let cl1 = F Red in
+                         let cl2: ♢F Color = let evt(()) = y in evt(F Blue) in
                          evt((cl1, cl2)))
               | when y → (let () = y in
                          let cl1 = F (Green) in
                          let cl2: ♢(F Color) = (let evt(()) = x in evt(F (Yellow))) in
                          evt((cl1, cl2)))) in
     let pack(n, colat) = out col in
-    let @((@coltnow), (@coltthen)) = colat in
+    let @(@coltnow, @coltthen) = colat in
     let (pr, @fwt) = ((split ifin) n) btnfin in
     let fwfin: (Widget ifin @ n) = @(
-        let w1 = (setColor ifin) (fwt, coltnow) in
+        let w1 = setColor ifin (fwt, coltnow) in
         let pack(n2, @colttthen) = out coltthen in
-        let (pr2, @fw2) = ((split ifin) n2) w1 in
+        let (pr2, @fw2) = split ifin n2 w1 in
         let wf: Widget ifin @ n2 = @(
-            (setColor ifin) (fw2, colttthen)
+            setColor ifin (fw2, colttthen)
         ) in
-        ((join ifin) n2) (pr2, wf)
+        join ifin n2 (pr2, wf)
     ) in
-    let wfin = ((join ifin) n) (pr, fwfin) in
-    (wfin, (btn11, btn21))
+    let wfin = join ifin n (pr, fwfin) in
+    (wfin, (btn1, btn2))
 ): (Widget ifin ⊗ (Widget i1 ⊗ Widget i2))
