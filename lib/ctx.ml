@@ -1,7 +1,7 @@
 open Ast
 open Utils
 
-type usage = Used | Fresh | Inf | Ext
+type usage = Used | Fresh | Inf | Ext | Typ
 type flag = Use | Ignore
 
 type state = {var: var; used: usage; typ: typ; ignore: flag; delay: flag list; at: indx}
@@ -12,6 +12,8 @@ let used v t :state= mkstate v Used t Use [Use] (Time 0)
 let fresh v t = mkstate v Fresh t Use [Use] (Time 0)
 let int v t = mkstate v Inf t Use [Use] (Time 0) (*includes indeces*)
 let ext v t = mkstate v Ext t Use [Use] (Time 0)
+
+let vartyp v t = mkstate v Typ t Use [Use] (Time 0)
 
 let islins s = s.used = Fresh || s.used = Used
 let islinu u = u=Fresh || u=Used
@@ -25,13 +27,13 @@ let actualAt s = if List.length s.delay <= 1 then s.at else Time 0
 
 type ctx = state list
 
-let printusage u = match u with Fresh->"1"| Used->"0" | Inf->"∞" | Ext->"ex"
+let printusage u = match u with Fresh->"1"| Used->"0" | Inf->"∞" | Ext->"ex" | Typ ->"type"
 
 let printstate s =
     let printinner =
         match s.used with
         | _ when s.at = Time 0 -> fstring "%s^%s: %s" s.var (printusage s.used) (printtype s.typ)
-        | Inf | Ext -> fstring "%s^%s: %s" s.var (printusage s.used) (printtype s.typ)
+        | Inf | Ext | Typ-> fstring "%s^%s: %s" s.var (printusage s.used) (printtype s.typ)
         | Used | Fresh -> fstring "%s^%s: %s[%s]" s.var (printusage s.used) (printtype s.typ) (printindx (actualAt s))
     in let i = printinner in
     match s.ignore, List.exists (fun x -> x=Ignore) s.delay with
@@ -115,3 +117,11 @@ let allsame (ctxl: ctx list) :unit t =
         same ctx ctx' >> return ctx
     ) (return (List.hd ctxl)) ctxl)
     in return ()
+
+let rec getNormal t =
+    match t with
+    | TVar x -> let* s = lookup x in
+                (match s.used with
+                | Typ -> getNormal s.typ
+                | _ -> error "")
+    | _ -> return t

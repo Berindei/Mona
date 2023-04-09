@@ -1,0 +1,102 @@
+let type intlist = unit + (Num * intlist) in
+let type intpairlist = unit + ((Num * Num) * intpairlist) in 
+let type intstream = ♢(F Num ⊗ intstream) in
+let type charstream = ♢(F Char ⊗ charstream) in
+let type intorcharstream = ♢(F (Num + Char) ⊗ intorcharstream) in
+let type unitstream = ♢(I ⊗ unitstream) in
+let type unitsstream = ♢((I ⊕ I) ⊗ unitsstream) in 
+
+let alist: F intlist = F ((let cons: Num → intlist → intlist = λx l1. R(x, l1) in
+let nil: intlist = L () in
+let hd: (intlist → unit + Num) = λl. case(l,
+    L() -> L (),
+    R(n, _) -> R n
+) in
+let tl: (intlist → intlist) = λl. case(l,
+    L() -> L (),
+    R(_, l1) -> l1
+) in
+let fix interleave: (intlist → intlist → unit + intlist) l1. λ l2. case(l1,
+    L () -> case(l2,
+        L () -> R L (),
+        R _  -> L ()
+    ),
+    R (n1, l3) -> case(l2,
+        L () -> L (),
+        R (n2, l4) -> case(interleave l3 l4,
+            L () -> L (),
+            R l -> R R (n1, R(n2, l))
+        )     
+    )
+
+) in
+let fix zip: (intlist → intlist → unit + intpairlist) l1. λ l2. case (l1,
+    L () -> case (l2,
+        L () -> R L (),
+        R _ -> L ()
+    ),
+    R (n1, l3) -> case (l2,
+        L () -> L (),
+        R (n2, l4) -> case (zip l3 l4,
+            L () -> L (),
+            R l -> R R ((n1, n2), l)
+        )
+    )
+) in
+
+// let l1: intlist = R(3, R(2, R(1, L()))) in
+// let l2: intlist = cons 4 (cons 5 (cons 6 nil)) in zip l1 l2
+cons 1 nil
+) : intlist) in let F l = alist in 
+
+let fix interleave: (unitstream ⊸ unitstream ⊸ unitsstream) s1 . (λ s2.
+    seq xs ← s1; ys ← s2 st 
+    | when xs → let (x, sxs) = xs in evt( (((L x) : I ⊕ I), run interleave sxs ys) )
+    | when ys → let (y, sys) = ys in evt( (((R y) : I ⊕ I), run interleave xs sys) ))
+in
+let fix map: (F G (F Num ⊸ F Char) ⊸ intstream ⊸ charstream) f . (λ s.
+    let F (f1) = f in
+    let evt(x, sxs) = s in evt( (run f1 x, run map F f1 sxs) ))
+in
+
+let fix mkUnitStr: (∀j:Id. Widget j ⊸  F G (∀i:Id. Widget i ⊸ Widget i ⊗ ♢I) ⊸ Widget j ⊗ unitstream) j. λ w ff.
+    let F f = ff in
+    let w, ev = run f j w in
+    let pack(n, @evat) = out ev in
+    let pr, @fw = split j n w in
+    let (@(fwfin, fstr)) : (Widget j ⊗ (I ⊗ unitstream))@n = @(
+        let fw, str = run mkUnitStr j fw F f in
+        (fw, (evat, str))
+    ) in
+    let (wfin) = join j n (pr, fwfin) in
+    let str = into (pack(n, fstr): (∃n:Time. (I ⊗ unitstream)@n)) in
+    (wfin, str)
+in
+(
+    let pack(j, w) = mkButton () in
+    let pack(k, w2) = mkButton () in 
+    let FGmkStr: F G (∀j:Id. Widget j ⊗ F G (∀i:Id. Widget i ⊸ Widget i ⊗ ♢I) ⊸ Widget j ⊗ unitstream) = F G (Λj. λ p. let (w, f) = p in run mkUnitStr j w f) in
+    let F GmkStr = FGmkStr in
+    let mkStr = run GmkStr in 
+    for w j: {
+        setText(F "Buton"),
+        setSize(F 20),
+        str1 = mkStr(F G onClick)
+    }
+    let mkStr = run GmkStr in 
+    for w2 k: {
+        setText(F "Buton 2"),
+        str2 = mkStr(F G onClick)
+    }
+    let str = run interleave str1 str2 in
+    let fix printer: (unitsstream ⊸ ♢I) s.
+        let evt(sum, str1) = s in let text: F String = case(sum, 
+            L () -> F "Buton 1",
+            R () -> F "Buton 2"
+        ) in let () = log text in run printer str1
+    in
+    let pack(n, @ev) = out (run printer str) in
+    let pr, @fw = split j n w in
+    let w = join j n (pr, @(let () = ev in fw)) in
+    (w, w2)
+) : (Widget j ⊗ Widget k)

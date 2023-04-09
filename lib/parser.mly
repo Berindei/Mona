@@ -63,6 +63,7 @@
 %token COLOR
 %token TNUM TSTRING TCHAR
 %token LBRACE RBRACE FOR
+%token UNDERSCORE TYPE
 %token EOF
 
 %start <Ast.expr> prog
@@ -136,8 +137,9 @@ let exp:=
 let letexp==
     | LET; ~=pat; EQ; e1=exp; IN; e2=exp;                          {match pat with PAnnot(p, t) -> Let(p, (Annot(e1, t)), e2) | _ -> Let(pat, e1, e2)}
     | LET; EVT; ~=pat; EQ; e1=exp; IN; e2=exp;                     <LetEvt>
-    | LET; EXTERN; ~=ID; COLON; ~=typ; EQ; ~=STRING; IN; e2=exp;     <Extern>
+    | LET; EXTERN; ~=ID; COLON; ~=typ; EQ; ~=STRING; IN; e2=exp;   <Extern>
     | LET; FIX; ~=ID; COLON; ~=typ; ~=ID; DOT; e1=exp; IN; e2=exp; <LetFix>
+    | LET; TYPE; ~=ID; EQ; ~=typ; IN; ~=exp;                       <LetType>
 
 let lambdaexp==
     | LAMBDA; ~=idlist; DOT; ~=exp;  <mklambda>
@@ -177,6 +179,7 @@ let cmd:=
 
 let pat_atom:=
     | unit; {PUnit}
+    | UNDERSCORE; {PWildcard}
     | ~=ID; <PVar>
     | LPARAN; ~=pat; RPARAN; <>
 
@@ -232,10 +235,11 @@ let at_typ:=
 
 let tp_atom:=
     | ~=unary_tp;            <>
-    | ~=nullary_tp;           <>
+    | ~=nullary_tp;          <>
     | LPARAN; ~=typ; RPARAN; <>
 
 let nullary_tp:=
+    | ~=ID;     <TVar>
     | LUNIT;   {LUnit}
     | IUNIT;   {IUnit}
     | COLOR;   {Color}

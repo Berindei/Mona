@@ -17,7 +17,7 @@ rule read =
     | comment     { read lexbuf }
     | "Id"        { WID }
     | "I"         { LUNIT }
-    | "1"         { IUNIT }
+    | "unit"         { IUNIT }
     | "λ" | "fun" { LAMBDA }
     | "Λ" | "Fun" { BLAMBDA }
     | "."         { DOT }
@@ -70,6 +70,8 @@ rule read =
     | "{"         { LBRACE }
     | "}"         { RBRACE }
     | "for"       { FOR }
+    | "_"         { UNDERSCORE }
+    | "type"      { TYPE }
     | string      { let s = Lexing.lexeme lexbuf in let l = String.length s in STRING (String.sub s 1 (l-2))}
     | num         { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | char        { let s = Lexing.lexeme lexbuf in CHAR (String.get s 1) }

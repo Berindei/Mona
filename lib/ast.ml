@@ -48,6 +48,12 @@ type typ =
     | Char  
     | String
 
+let islint t = 
+    match t with
+    | TVar x -> failwith (fstring "Unable to infer type of %s" x)
+    | LUnit | Loli _ | Tensor _ | LSum _ | F _ | Evt _ | At _ | Univ _ | Exist _ | Prefix _ | Widget _ -> true
+    | _ -> false
+
 let rec printtype t = 
     match t with
     | TVar x            -> x
@@ -75,6 +81,7 @@ let rec printtype t =
 
 type pat = 
     | PUnit
+    | PWildcard
     | PAt of pat
     | PF of pat
     | PPack of var * pat
@@ -86,6 +93,7 @@ type pat =
 let rec printpat p =
     match p with
     | PUnit -> "()"
+    | PWildcard -> "_"
     | PAt p -> fstring "@(%s)" (printpat p)
     | PF p -> fstring "F(%s)" (printpat p)
     | PPack (i, p) -> fstring "pack(%s, %s)" i (printpat p)
@@ -134,6 +142,7 @@ type expr =
     | EChar         of char
     | EString       of string
     | Let           of pat * expr * expr
+    | LetType       of var * typ * expr
 
 let rec printexpr e =
     match e with
@@ -175,5 +184,6 @@ let rec printexpr e =
     | EChar c                         -> fstring "\'%c\'" c
     | EString s                       -> fstring "\"%s\"" s
     | Let (p, e1, e2)                 -> fstring "let %s = %s in %s" (printpat p) (printexpr e1) (printexpr e2)
+    | LetType(x, t, e')               -> fstring "let type %s = %s in %s" x (printtype t) (printexpr e')
     | _ -> "##############"
 

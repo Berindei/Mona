@@ -62,6 +62,11 @@ let _setColor = (id => ([widget, color]) => {
     return widget;
 })
 
+let _setSize = (id => ([widget, n]) => {
+    widget.style.size = n;
+    return widget;
+})
+
 let _split = (id => t => widget => {
     return [widget, function(cb){return cb(widget)}];
 })
@@ -78,6 +83,11 @@ let _blue = "blue";
 let _green = "green";
 
 let _yellow = "yellow";
+
+let _log = (str =>{
+    console.log (str);
+    return null;
+})
 
 let run = () => {
     document.body.textContent = ""

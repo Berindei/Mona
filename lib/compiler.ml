@@ -23,7 +23,7 @@ let rec elevateT (l: 'a t list) : 'a list t =
 
 let rec buildParams p access = 
   match p with
-  | PUnit -> []
+  | PUnit | PWildcard -> []
   | PPair(p1, p2) -> (buildParams p1 (access ^ "[0]")) @ (buildParams p2 (access ^ "[1]"))
   | PAt p -> buildParams p access
   | PF p -> buildParams p access
@@ -32,7 +32,7 @@ let rec buildParams p access =
   | PAnnot (p, _) -> buildParams p access
   | _ -> failwith "plang"
 
-let vars p = List.map (function (x, _) -> x) (buildParams p "")
+let vars p = List.map fst (buildParams p "")
 
 let buildParamStrings p access =
   let rec builder l = 
@@ -92,9 +92,10 @@ let rec fv e =
   | AppIndx(e1, _) -> (fv e1)
   | Pack(_, e2) -> (fv e2)
   (* | LetPack(x, i, e1, e2) -> minus ((fv e1) @ (fv e2)) x *)
-  | Let(p, e1, e2) -> List.fold_left minus ((fv e1) @ (fv e2)) (vars p)
+  | Let(p, e1, e2) -> (fv e1) @ List.fold_left minus (fv e2) (vars p)
   | LetFix(f, t, x, e1, e2) -> minus (minus ((fv e1) @ (fv e2)) f) x
   | Extern(x, t, s, e1) -> fv e1
+  | LetType(x, t', e') -> fv e'
   | Out(e1) -> fv e1
   | Into(e1) -> fv e1
   | Indx(_) | ENum(_) | EChar(_) | EString(_) -> []
@@ -277,12 +278,19 @@ let rec compile e : string t=
 })(%s)})()" e1' params e2' accs)
   | LetFix(f, t, x, e1, e2) -> let* e1' = compile e1 in
                                let* e2' = compile e2 in
-                               return (fstring
+                               let b = islint t in 
+                               if b then return (fstring
 "((function (%s){return (%s);})
 (function %s(unit){
   return ( (%s) => {return (%s);} );
 }))" f e2' f x e1' )
+                               else return (fstring 
+"((function (%s){return (%s);})
+(function %s(%s){
+  return (%s)
+}))" f e2' f x e1' )
   | Extern(x, t, s, e') -> let* () = add (x, s) in compile e'
+  | LetType(x, t, e') -> compile e'
   | Out e' -> compile e'
   | Into e' -> compile e'
   | Indx(IVar x) -> return x 

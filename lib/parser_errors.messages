@@ -1,0 +1,2124 @@
+prog: WIDGET
+##
+## Ends in an error in state: 0.
+##
+## prog' -> . prog [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ WIDGET
+##
+## Ends in an error in state: 2.
+##
+## exp -> SEQ . binderst ST branchst [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## SEQ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ SEMICOLON WIDGET
+##
+## Ends in an error in state: 4.
+##
+## binderst -> option(SEMICOLON) . binder binders [ ST ]
+##
+## The known suffix of the stack is as follows:
+## option(SEMICOLON)
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID WIDGET
+##
+## Ends in an error in state: 5.
+##
+## binder -> ID . LARROW exp [ ST SEMICOLON ]
+##
+## The known suffix of the stack is as follows:
+## ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW WIDGET
+##
+## Ends in an error in state: 6.
+##
+## binder -> ID LARROW . exp [ ST SEMICOLON ]
+##
+## The known suffix of the stack is as follows:
+## ID LARROW
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: RUN WIDGET
+##
+## Ends in an error in state: 7.
+##
+## unary_exp -> RUN . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## RUN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: R WIDGET
+##
+## Ends in an error in state: 8.
+##
+## unary_exp -> R . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## R
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: P2 WIDGET
+##
+## Ends in an error in state: 9.
+##
+## unary_exp -> P2 . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## P2
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: P1 WIDGET
+##
+## Ends in an error in state: 10.
+##
+## unary_exp -> P1 . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## P1
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: OUT WIDGET
+##
+## Ends in an error in state: 11.
+##
+## unary_exp -> OUT . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## OUT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LPARAN WIDGET
+##
+## Ends in an error in state: 13.
+##
+## exp_atom -> LPARAN . exp RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+## exp_atom -> LPARAN . exp COMMA exp RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+## nullary_exp -> LPARAN . RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: PACK WIDGET
+##
+## Ends in an error in state: 15.
+##
+## exp -> PACK . LPARAN indx COMMA exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## PACK
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: PACK LPARAN WIDGET
+##
+## Ends in an error in state: 16.
+##
+## exp -> PACK LPARAN . indx COMMA exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## PACK LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: PACK LPARAN ID WIDGET
+##
+## Ends in an error in state: 18.
+##
+## exp -> PACK LPARAN indx . COMMA exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## PACK LPARAN indx
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: PACK LPARAN ID COMMA WIDGET
+##
+## Ends in an error in state: 19.
+##
+## exp -> PACK LPARAN indx COMMA . exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## PACK LPARAN indx COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET WIDGET
+##
+## Ends in an error in state: 20.
+##
+## exp -> LET . pat EQ exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> LET . EVT pat EQ exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> LET . EXTERN ID COLON typ EQ STRING IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> LET . FIX ID COLON typ ID DOT exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> LET . TYPE ID EQ typ IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET TYPE WIDGET
+##
+## Ends in an error in state: 22.
+##
+## exp -> LET TYPE . ID EQ typ IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET TYPE
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET TYPE ID WIDGET
+##
+## Ends in an error in state: 23.
+##
+## exp -> LET TYPE ID . EQ typ IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET TYPE ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET TYPE ID EQ WID
+##
+## Ends in an error in state: 24.
+##
+## exp -> LET TYPE ID EQ . typ IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET TYPE ID EQ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: WIDGET WIDGET
+##
+## Ends in an error in state: 25.
+##
+## nullary_tp -> WIDGET . indx [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## WIDGET
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: UNIV WIDGET
+##
+## Ends in an error in state: 27.
+##
+## func_typ -> UNIV . indxidlistst DOT typ [ ST SEMICOLON RPARAN RARROW IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## UNIV
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: EXIST LPARAN WIDGET
+##
+## Ends in an error in state: 28.
+##
+## unit_indx_def -> LPARAN . unit_indx_def RPARAN [ RPARAN DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: EXIST ID WIDGET
+##
+## Ends in an error in state: 29.
+##
+## unit_indx_def -> ID . COLON indxtyp [ RPARAN DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: EXIST ID COLON WIDGET
+##
+## Ends in an error in state: 30.
+##
+## unit_indx_def -> ID COLON . indxtyp [ RPARAN DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## ID COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: EXIST LPARAN ID COLON TIME WIDGET
+##
+## Ends in an error in state: 34.
+##
+## unit_indx_def -> LPARAN unit_indx_def . RPARAN [ RPARAN DOT COMMA ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN unit_indx_def
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: EXIST ID COLON TIME WIDGET
+##
+## Ends in an error in state: 36.
+##
+## indxidlistst -> unit_indx_def . indxidlist [ DOT ]
+##
+## The known suffix of the stack is as follows:
+## unit_indx_def
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: EXIST ID COLON TIME COMMA WIDGET
+##
+## Ends in an error in state: 37.
+##
+## indxidlist -> COMMA . unit_indx_def indxidlist [ DOT ]
+##
+## The known suffix of the stack is as follows:
+## COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: EXIST ID COLON TIME COMMA ID COLON TIME WIDGET
+##
+## Ends in an error in state: 38.
+##
+## indxidlist -> COMMA unit_indx_def . indxidlist [ DOT ]
+##
+## The known suffix of the stack is as follows:
+## COMMA unit_indx_def
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: UNIV ID COLON TIME DOT WID
+##
+## Ends in an error in state: 42.
+##
+## func_typ -> UNIV indxidlistst DOT . typ [ ST SEMICOLON RPARAN RARROW IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## UNIV indxidlistst DOT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: PREFIX WIDGET
+##
+## Ends in an error in state: 46.
+##
+## nullary_tp -> PREFIX . indx indx [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## PREFIX
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: PREFIX ID WIDGET
+##
+## Ends in an error in state: 47.
+##
+## nullary_tp -> PREFIX indx . indx [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## PREFIX indx
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: LPARAN WID
+##
+## Ends in an error in state: 50.
+##
+## tp_atom -> LPARAN . typ RPARAN [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: G WID
+##
+## Ends in an error in state: 53.
+##
+## tp_atom -> G . tp_atom [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## G
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: F WID
+##
+## Ends in an error in state: 54.
+##
+## tp_atom -> F . tp_atom [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## F
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: DIAMOND WID
+##
+## Ends in an error in state: 55.
+##
+## tp_atom -> DIAMOND . tp_atom [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## DIAMOND
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: EXIST WIDGET
+##
+## Ends in an error in state: 61.
+##
+## func_typ -> EXIST . indxidlistst DOT typ [ ST SEMICOLON RPARAN RARROW IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## EXIST
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: EXIST ID COLON TIME DOT WID
+##
+## Ends in an error in state: 63.
+##
+## func_typ -> EXIST indxidlistst DOT . typ [ ST SEMICOLON RPARAN RARROW IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## EXIST indxidlistst DOT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: COLOR RARROW WID
+##
+## Ends in an error in state: 67.
+##
+## func_typ -> sum_typ RARROW . func_typ [ ST SEMICOLON RPARAN RARROW IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## sum_typ RARROW
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: COLOR PLUS WID
+##
+## Ends in an error in state: 69.
+##
+## sum_typ -> prod_typ PLUS . sum_typ [ ST SEMICOLON RPARAN RARROW LOLI IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## prod_typ PLUS
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: COLOR WIDGET
+##
+## Ends in an error in state: 71.
+##
+## at_typ -> at_typ . AT indx [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+## prod_typ -> at_typ . TIMES prod_typ [ ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR ]
+## prod_typ -> at_typ . TENSOR prod_typ [ ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR ]
+## prod_typ -> at_typ . [ ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## at_typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: COLOR TIMES WID
+##
+## Ends in an error in state: 72.
+##
+## prod_typ -> at_typ TIMES . prod_typ [ ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## at_typ TIMES
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: COLOR TENSOR WID
+##
+## Ends in an error in state: 74.
+##
+## prod_typ -> at_typ TENSOR . prod_typ [ ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## at_typ TENSOR
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: COLOR AT WIDGET
+##
+## Ends in an error in state: 76.
+##
+## at_typ -> at_typ AT . indx [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## at_typ AT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: COLOR LPLUS WID
+##
+## Ends in an error in state: 78.
+##
+## sum_typ -> prod_typ LPLUS . sum_typ [ ST SEMICOLON RPARAN RARROW LOLI IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## prod_typ LPLUS
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: COLOR LOLI WID
+##
+## Ends in an error in state: 81.
+##
+## func_typ -> sum_typ LOLI . func_typ [ ST SEMICOLON RPARAN RARROW IN ID EQ EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## sum_typ LOLI
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: LPARAN COLOR ST
+##
+## Ends in an error in state: 84.
+##
+## tp_atom -> LPARAN typ . RPARAN [ TIMES TENSOR ST SEMICOLON RPARAN RARROW PLUS LPLUS LOLI IN ID EQ EOF COMMA COLON BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN typ
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET TYPE ID EQ COLOR ST
+##
+## Ends in an error in state: 87.
+##
+## exp -> LET TYPE ID EQ typ . IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET TYPE ID EQ typ
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET TYPE ID EQ COLOR IN WIDGET
+##
+## Ends in an error in state: 88.
+##
+## exp -> LET TYPE ID EQ typ IN . exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET TYPE ID EQ typ IN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LAMBDA WIDGET
+##
+## Ends in an error in state: 89.
+##
+## exp -> LAMBDA . idlist DOT exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LAMBDA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: BLAMBDA ID WIDGET
+##
+## Ends in an error in state: 90.
+##
+## idlist -> ID . idlist [ DOT ]
+##
+## The known suffix of the stack is as follows:
+## ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LAMBDA DOT WIDGET
+##
+## Ends in an error in state: 93.
+##
+## exp -> LAMBDA idlist DOT . exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LAMBDA idlist DOT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: L WIDGET
+##
+## Ends in an error in state: 94.
+##
+## unary_exp -> L . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## L
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: INTO WIDGET
+##
+## Ends in an error in state: 95.
+##
+## unary_exp -> INTO . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## INTO
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: G WIDGET
+##
+## Ends in an error in state: 97.
+##
+## unary_exp -> G . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## G
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: F WIDGET
+##
+## Ends in an error in state: 98.
+##
+## unary_exp -> F . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## F
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: EVT WIDGET
+##
+## Ends in an error in state: 99.
+##
+## unary_exp -> EVT . LPARAN exp_atom RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## EVT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: EVT LPARAN WIDGET
+##
+## Ends in an error in state: 100.
+##
+## unary_exp -> EVT LPARAN . exp_atom RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## EVT LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: AT WIDGET
+##
+## Ends in an error in state: 102.
+##
+## unary_exp -> AT . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## AT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: EVT LPARAN CHAR WIDGET
+##
+## Ends in an error in state: 106.
+##
+## unary_exp -> EVT LPARAN exp_atom . RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## EVT LPARAN exp_atom
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR WIDGET
+##
+## Ends in an error in state: 112.
+##
+## exp -> FOR . ID ID COLON LBRACE cmdlist RBRACE exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## FOR
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID WIDGET
+##
+## Ends in an error in state: 113.
+##
+## exp -> FOR ID . ID COLON LBRACE cmdlist RBRACE exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## FOR ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID WIDGET
+##
+## Ends in an error in state: 114.
+##
+## exp -> FOR ID ID . COLON LBRACE cmdlist RBRACE exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## FOR ID ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON WIDGET
+##
+## Ends in an error in state: 115.
+##
+## exp -> FOR ID ID COLON . LBRACE cmdlist RBRACE exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## FOR ID ID COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE WIDGET
+##
+## Ends in an error in state: 116.
+##
+## exp -> FOR ID ID COLON LBRACE . cmdlist RBRACE exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## FOR ID ID COLON LBRACE
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET PACK WIDGET
+##
+## Ends in an error in state: 117.
+##
+## pat -> PACK . LPARAN ID COMMA pat RPARAN [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## PACK
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET PACK LPARAN WIDGET
+##
+## Ends in an error in state: 118.
+##
+## pat -> PACK LPARAN . ID COMMA pat RPARAN [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## PACK LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET PACK LPARAN ID WIDGET
+##
+## Ends in an error in state: 119.
+##
+## pat -> PACK LPARAN ID . COMMA pat RPARAN [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## PACK LPARAN ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET PACK LPARAN ID COMMA WIDGET
+##
+## Ends in an error in state: 120.
+##
+## pat -> PACK LPARAN ID COMMA . pat RPARAN [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## PACK LPARAN ID COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET LPARAN WIDGET
+##
+## Ends in an error in state: 121.
+##
+## pat_atom -> LPARAN . RPARAN [ RPARAN RARROW EQ COMMA COLON ]
+## pat_atom -> LPARAN . pat RPARAN [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET F WIDGET
+##
+## Ends in an error in state: 124.
+##
+## pat -> F . pat_atom [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## F
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET AT WIDGET
+##
+## Ends in an error in state: 126.
+##
+## pat -> AT . pat_atom [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## AT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET LPARAN ID RARROW
+##
+## Ends in an error in state: 129.
+##
+## pat -> pat . COMMA pat [ RPARAN COMMA COLON ]
+## pat -> pat . COLON typ [ RPARAN COMMA COLON ]
+## pat_atom -> LPARAN pat . RPARAN [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN pat
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID COMMA WIDGET
+##
+## Ends in an error in state: 131.
+##
+## pat -> pat COMMA . pat [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## pat COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID COMMA ID WIDGET
+##
+## Ends in an error in state: 132.
+##
+## pat -> pat . COMMA pat [ RPARAN RARROW EQ COMMA COLON ]
+## pat -> pat COMMA pat . [ RPARAN RARROW EQ COMMA COLON ]
+## pat -> pat . COLON typ [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## pat COMMA pat
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID COLON WID
+##
+## Ends in an error in state: 133.
+##
+## pat -> pat COLON . typ [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## pat COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET PACK LPARAN ID COMMA ID RARROW
+##
+## Ends in an error in state: 135.
+##
+## pat -> pat . COMMA pat [ RPARAN COMMA COLON ]
+## pat -> pat . COLON typ [ RPARAN COMMA COLON ]
+## pat -> PACK LPARAN ID COMMA pat . RPARAN [ RPARAN RARROW EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## PACK LPARAN ID COMMA pat
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID WIDGET
+##
+## Ends in an error in state: 137.
+##
+## cmd -> ID . LPARAN option(exp) RPARAN [ RBRACE COMMA ]
+## pat_atom -> ID . [ EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID LPARAN WIDGET
+##
+## Ends in an error in state: 138.
+##
+## cmd -> ID LPARAN . option(exp) RPARAN [ RBRACE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## ID LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE WIDGET
+##
+## Ends in an error in state: 139.
+##
+## exp -> CASE . LPARAN exp COMMA L pat RARROW exp COMMA R pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN WIDGET
+##
+## Ends in an error in state: 140.
+##
+## exp -> CASE LPARAN . exp COMMA L pat RARROW exp COMMA R pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: BLAMBDA WIDGET
+##
+## Ends in an error in state: 141.
+##
+## exp -> BLAMBDA . idlist DOT exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## BLAMBDA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: BLAMBDA DOT WIDGET
+##
+## Ends in an error in state: 143.
+##
+## exp -> BLAMBDA idlist DOT . exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## BLAMBDA idlist DOT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CHAR WIDGET
+##
+## Ends in an error in state: 144.
+##
+## exp_app -> exp_atom_list . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp_atom_list -> exp_atom_list . exp_atom [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## exp_atom_list
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: BLAMBDA DOT CHAR COLON COLOR ID
+##
+## Ends in an error in state: 148.
+##
+## exp -> BLAMBDA idlist DOT exp . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## BLAMBDA idlist DOT exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+## In state 150, spurious reduction of production exp -> exp COLON typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CHAR COLON WID
+##
+## Ends in an error in state: 149.
+##
+## exp -> exp COLON . typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## exp COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR BAR
+##
+## Ends in an error in state: 151.
+##
+## exp -> exp . COLON typ [ COMMA COLON ]
+## exp -> CASE LPARAN exp . COMMA L pat RARROW exp COMMA R pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA WIDGET
+##
+## Ends in an error in state: 152.
+##
+## exp -> CASE LPARAN exp COMMA . L pat RARROW exp COMMA R pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA L WIDGET
+##
+## Ends in an error in state: 153.
+##
+## exp -> CASE LPARAN exp COMMA L . pat RARROW exp COMMA R pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA L
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA L ID WIDGET
+##
+## Ends in an error in state: 154.
+##
+## exp -> CASE LPARAN exp COMMA L pat . RARROW exp COMMA R pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## pat -> pat . COMMA pat [ RARROW COMMA COLON ]
+## pat -> pat . COLON typ [ RARROW COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA L pat
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA L ID RARROW WIDGET
+##
+## Ends in an error in state: 155.
+##
+## exp -> CASE LPARAN exp COMMA L pat RARROW . exp COMMA R pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA L pat RARROW
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA L ID RARROW CHAR BAR
+##
+## Ends in an error in state: 156.
+##
+## exp -> exp . COLON typ [ COMMA COLON ]
+## exp -> CASE LPARAN exp COMMA L pat RARROW exp . COMMA R pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA L pat RARROW exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA L ID RARROW CHAR COMMA WIDGET
+##
+## Ends in an error in state: 157.
+##
+## exp -> CASE LPARAN exp COMMA L pat RARROW exp COMMA . R pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA L pat RARROW exp COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA L ID RARROW CHAR COMMA R WIDGET
+##
+## Ends in an error in state: 158.
+##
+## exp -> CASE LPARAN exp COMMA L pat RARROW exp COMMA R . pat RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA L pat RARROW exp COMMA R
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA L ID RARROW CHAR COMMA R ID WIDGET
+##
+## Ends in an error in state: 159.
+##
+## exp -> CASE LPARAN exp COMMA L pat RARROW exp COMMA R pat . RARROW exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## pat -> pat . COMMA pat [ RARROW COMMA COLON ]
+## pat -> pat . COLON typ [ RARROW COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA L pat RARROW exp COMMA R pat
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA L ID RARROW CHAR COMMA R ID RARROW WIDGET
+##
+## Ends in an error in state: 160.
+##
+## exp -> CASE LPARAN exp COMMA L pat RARROW exp COMMA R pat RARROW . exp RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA L pat RARROW exp COMMA R pat RARROW
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CASE LPARAN CHAR COMMA L ID RARROW CHAR COMMA R ID RARROW CHAR BAR
+##
+## Ends in an error in state: 161.
+##
+## exp -> exp . COLON typ [ RPARAN COLON ]
+## exp -> CASE LPARAN exp COMMA L pat RARROW exp COMMA R pat RARROW exp . RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## CASE LPARAN exp COMMA L pat RARROW exp COMMA R pat RARROW exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID LPARAN CHAR BAR
+##
+## Ends in an error in state: 165.
+##
+## exp -> exp . COLON typ [ RPARAN COLON ]
+## option(exp) -> exp . [ RPARAN ]
+##
+## The known suffix of the stack is as follows:
+## exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE UNDERSCORE RARROW
+##
+## Ends in an error in state: 166.
+##
+## cmd -> pat . EQ ID LPARAN option(exp) RPARAN [ RBRACE COMMA ]
+## pat -> pat . COMMA pat [ EQ COMMA COLON ]
+## pat -> pat . COLON typ [ EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## pat
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID EQ WIDGET
+##
+## Ends in an error in state: 167.
+##
+## cmd -> pat EQ . ID LPARAN option(exp) RPARAN [ RBRACE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## pat EQ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID EQ ID WIDGET
+##
+## Ends in an error in state: 168.
+##
+## cmd -> pat EQ ID . LPARAN option(exp) RPARAN [ RBRACE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## pat EQ ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID EQ ID LPARAN WIDGET
+##
+## Ends in an error in state: 169.
+##
+## cmd -> pat EQ ID LPARAN . option(exp) RPARAN [ RBRACE COMMA ]
+##
+## The known suffix of the stack is as follows:
+## pat EQ ID LPARAN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID LPARAN RPARAN RBRACE WIDGET
+##
+## Ends in an error in state: 173.
+##
+## exp -> FOR ID ID COLON LBRACE cmdlist RBRACE . exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## FOR ID ID COLON LBRACE cmdlist RBRACE
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID LPARAN RPARAN RBRACE CHAR COLON COLOR ID
+##
+## Ends in an error in state: 174.
+##
+## exp -> exp . COLON typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> FOR ID ID COLON LBRACE cmdlist RBRACE exp . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## FOR ID ID COLON LBRACE cmdlist RBRACE exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+## In state 150, spurious reduction of production exp -> exp COLON typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID LPARAN RPARAN WIDGET
+##
+## Ends in an error in state: 175.
+##
+## cmdlist -> cmd . [ RBRACE ]
+## cmdlist -> cmd . COMMA cmdlist [ RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## cmd
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: FOR ID ID COLON LBRACE ID LPARAN RPARAN COMMA WIDGET
+##
+## Ends in an error in state: 176.
+##
+## cmdlist -> cmd COMMA . cmdlist [ RBRACE ]
+##
+## The known suffix of the stack is as follows:
+## cmd COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LAMBDA DOT CHAR COLON COLOR ID
+##
+## Ends in an error in state: 178.
+##
+## exp -> LAMBDA idlist DOT exp . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LAMBDA idlist DOT exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+## In state 150, spurious reduction of production exp -> exp COLON typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET TYPE ID EQ COLOR IN CHAR COLON COLOR ID
+##
+## Ends in an error in state: 179.
+##
+## exp -> LET TYPE ID EQ typ IN exp . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET TYPE ID EQ typ IN exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+## In state 150, spurious reduction of production exp -> exp COLON typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET FIX WIDGET
+##
+## Ends in an error in state: 180.
+##
+## exp -> LET FIX . ID COLON typ ID DOT exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET FIX
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET FIX ID WIDGET
+##
+## Ends in an error in state: 181.
+##
+## exp -> LET FIX ID . COLON typ ID DOT exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET FIX ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET FIX ID COLON WID
+##
+## Ends in an error in state: 182.
+##
+## exp -> LET FIX ID COLON . typ ID DOT exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET FIX ID COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET FIX ID COLON COLOR ST
+##
+## Ends in an error in state: 183.
+##
+## exp -> LET FIX ID COLON typ . ID DOT exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET FIX ID COLON typ
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET FIX ID COLON COLOR ID WIDGET
+##
+## Ends in an error in state: 184.
+##
+## exp -> LET FIX ID COLON typ ID . DOT exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET FIX ID COLON typ ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET FIX ID COLON COLOR ID DOT WIDGET
+##
+## Ends in an error in state: 185.
+##
+## exp -> LET FIX ID COLON typ ID DOT . exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET FIX ID COLON typ ID DOT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET FIX ID COLON COLOR ID DOT CHAR BAR
+##
+## Ends in an error in state: 186.
+##
+## exp -> LET FIX ID COLON typ ID DOT exp . IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ IN COLON ]
+##
+## The known suffix of the stack is as follows:
+## LET FIX ID COLON typ ID DOT exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET FIX ID COLON COLOR ID DOT CHAR IN WIDGET
+##
+## Ends in an error in state: 187.
+##
+## exp -> LET FIX ID COLON typ ID DOT exp IN . exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET FIX ID COLON typ ID DOT exp IN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET FIX ID COLON COLOR ID DOT CHAR IN CHAR COLON COLOR ID
+##
+## Ends in an error in state: 188.
+##
+## exp -> LET FIX ID COLON typ ID DOT exp IN exp . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET FIX ID COLON typ ID DOT exp IN exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+## In state 150, spurious reduction of production exp -> exp COLON typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EXTERN WIDGET
+##
+## Ends in an error in state: 189.
+##
+## exp -> LET EXTERN . ID COLON typ EQ STRING IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EXTERN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EXTERN ID WIDGET
+##
+## Ends in an error in state: 190.
+##
+## exp -> LET EXTERN ID . COLON typ EQ STRING IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EXTERN ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EXTERN ID COLON WID
+##
+## Ends in an error in state: 191.
+##
+## exp -> LET EXTERN ID COLON . typ EQ STRING IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EXTERN ID COLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EXTERN ID COLON COLOR ST
+##
+## Ends in an error in state: 192.
+##
+## exp -> LET EXTERN ID COLON typ . EQ STRING IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EXTERN ID COLON typ
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EXTERN ID COLON COLOR EQ WIDGET
+##
+## Ends in an error in state: 193.
+##
+## exp -> LET EXTERN ID COLON typ EQ . STRING IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EXTERN ID COLON typ EQ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EXTERN ID COLON COLOR EQ STRING WIDGET
+##
+## Ends in an error in state: 194.
+##
+## exp -> LET EXTERN ID COLON typ EQ STRING . IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EXTERN ID COLON typ EQ STRING
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EXTERN ID COLON COLOR EQ STRING IN WIDGET
+##
+## Ends in an error in state: 195.
+##
+## exp -> LET EXTERN ID COLON typ EQ STRING IN . exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EXTERN ID COLON typ EQ STRING IN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EXTERN ID COLON COLOR EQ STRING IN CHAR COLON COLOR ID
+##
+## Ends in an error in state: 196.
+##
+## exp -> LET EXTERN ID COLON typ EQ STRING IN exp . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EXTERN ID COLON typ EQ STRING IN exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+## In state 150, spurious reduction of production exp -> exp COLON typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EVT WIDGET
+##
+## Ends in an error in state: 197.
+##
+## exp -> LET EVT . pat EQ exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EVT
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EVT ID RARROW
+##
+## Ends in an error in state: 198.
+##
+## exp -> LET EVT pat . EQ exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## pat -> pat . COMMA pat [ EQ COMMA COLON ]
+## pat -> pat . COLON typ [ EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## LET EVT pat
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EVT ID EQ WIDGET
+##
+## Ends in an error in state: 199.
+##
+## exp -> LET EVT pat EQ . exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EVT pat EQ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EVT ID EQ CHAR BAR
+##
+## Ends in an error in state: 200.
+##
+## exp -> LET EVT pat EQ exp . IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ IN COLON ]
+##
+## The known suffix of the stack is as follows:
+## LET EVT pat EQ exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EVT ID EQ CHAR IN WIDGET
+##
+## Ends in an error in state: 201.
+##
+## exp -> LET EVT pat EQ exp IN . exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EVT pat EQ exp IN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET EVT ID EQ CHAR IN CHAR COLON COLOR ID
+##
+## Ends in an error in state: 202.
+##
+## exp -> LET EVT pat EQ exp IN exp . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET EVT pat EQ exp IN exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+## In state 150, spurious reduction of production exp -> exp COLON typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID RARROW
+##
+## Ends in an error in state: 203.
+##
+## exp -> LET pat . EQ exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## pat -> pat . COMMA pat [ EQ COMMA COLON ]
+## pat -> pat . COLON typ [ EQ COMMA COLON ]
+##
+## The known suffix of the stack is as follows:
+## LET pat
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID EQ WIDGET
+##
+## Ends in an error in state: 204.
+##
+## exp -> LET pat EQ . exp IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET pat EQ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID EQ CHAR BAR
+##
+## Ends in an error in state: 205.
+##
+## exp -> LET pat EQ exp . IN exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ IN COLON ]
+##
+## The known suffix of the stack is as follows:
+## LET pat EQ exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID EQ CHAR IN WIDGET
+##
+## Ends in an error in state: 206.
+##
+## exp -> LET pat EQ exp IN . exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET pat EQ exp IN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LET ID EQ CHAR IN CHAR COLON COLOR ID
+##
+## Ends in an error in state: 207.
+##
+## exp -> LET pat EQ exp IN exp . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## LET pat EQ exp IN exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+## In state 150, spurious reduction of production exp -> exp COLON typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: PACK LPARAN ID COMMA CHAR BAR
+##
+## Ends in an error in state: 208.
+##
+## exp -> exp . COLON typ [ RPARAN COLON ]
+## exp -> PACK LPARAN indx COMMA exp . RPARAN [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## PACK LPARAN indx COMMA exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LPARAN CHAR BAR
+##
+## Ends in an error in state: 210.
+##
+## exp -> exp . COLON typ [ RPARAN COMMA COLON ]
+## exp_atom -> LPARAN exp . RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+## exp_atom -> LPARAN exp . COMMA exp RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LPARAN CHAR COMMA WIDGET
+##
+## Ends in an error in state: 212.
+##
+## exp_atom -> LPARAN exp COMMA . exp RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN exp COMMA
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: LPARAN CHAR COMMA CHAR BAR
+##
+## Ends in an error in state: 213.
+##
+## exp -> exp . COLON typ [ RPARAN COLON ]
+## exp_atom -> LPARAN exp COMMA exp . RPARAN [ STRING ST SEMICOLON RUN RPARAN R P2 P1 OUT NUM LPARAN L INTO IN ID G F EVT EOF COMMA COLON CHAR BAR AT ]
+##
+## The known suffix of the stack is as follows:
+## LPARAN exp COMMA exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR BAR
+##
+## Ends in an error in state: 220.
+##
+## binder -> ID LARROW exp . [ ST SEMICOLON ]
+## exp -> exp . COLON typ [ ST SEMICOLON COLON ]
+##
+## The known suffix of the stack is as follows:
+## ID LARROW exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR ST
+##
+## Ends in an error in state: 221.
+##
+## binderst -> option(SEMICOLON) binder . binders [ ST ]
+##
+## The known suffix of the stack is as follows:
+## option(SEMICOLON) binder
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+## In state 220, spurious reduction of production binder -> ID LARROW exp
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR SEMICOLON WIDGET
+##
+## Ends in an error in state: 222.
+##
+## binders -> SEMICOLON . binder binders [ ST ]
+## binders -> SEMICOLON . binder [ ST ]
+##
+## The known suffix of the stack is as follows:
+## SEMICOLON
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR SEMICOLON ID LARROW CHAR ST WIDGET
+##
+## Ends in an error in state: 227.
+##
+## exp -> SEQ binderst ST . branchst [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## SEQ binderst ST
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR SEMICOLON ID LARROW CHAR ST BAR WIDGET
+##
+## Ends in an error in state: 229.
+##
+## branchst -> option(BAR) . branch branches [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## option(BAR)
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR SEMICOLON ID LARROW CHAR ST WHEN WIDGET
+##
+## Ends in an error in state: 230.
+##
+## branch -> WHEN . ID RARROW exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## WHEN
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR SEMICOLON ID LARROW CHAR ST WHEN ID WIDGET
+##
+## Ends in an error in state: 231.
+##
+## branch -> WHEN ID . RARROW exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## WHEN ID
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR SEMICOLON ID LARROW CHAR ST WHEN ID RARROW WIDGET
+##
+## Ends in an error in state: 232.
+##
+## branch -> WHEN ID RARROW . exp [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## WHEN ID RARROW
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR SEMICOLON ID LARROW CHAR ST WHEN ID RARROW CHAR COLON COLOR ID
+##
+## Ends in an error in state: 233.
+##
+## branch -> WHEN ID RARROW exp . [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## exp -> exp . COLON typ [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## WHEN ID RARROW exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+## In state 150, spurious reduction of production exp -> exp COLON typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR SEMICOLON ID LARROW CHAR ST WHEN ID RARROW CHAR ST
+##
+## Ends in an error in state: 234.
+##
+## branchst -> option(BAR) branch . branches [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## option(BAR) branch
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+## In state 233, spurious reduction of production branch -> WHEN ID RARROW exp
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: SEQ ID LARROW CHAR SEMICOLON ID LARROW CHAR ST WHEN ID RARROW CHAR BAR WIDGET
+##
+## Ends in an error in state: 235.
+##
+## branches -> BAR . branch branches [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+## branches -> BAR . branch [ ST SEMICOLON RPARAN IN EOF COMMA COLON BAR ]
+##
+## The known suffix of the stack is as follows:
+## BAR
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+prog: CHAR BAR
+##
+## Ends in an error in state: 241.
+##
+## exp -> exp . COLON typ [ EOF COLON ]
+## prog -> exp . EOF [ # ]
+##
+## The known suffix of the stack is as follows:
+## exp
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 144, spurious reduction of production exp_app -> exp_atom_list
+## In state 147, spurious reduction of production exp -> exp_app
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: WID
+##
+## Ends in an error in state: 243.
+##
+## test_typ' -> . test_typ [ # ]
+##
+## The known suffix of the stack is as follows:
+##
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
+test_typ: COLOR ST
+##
+## Ends in an error in state: 244.
+##
+## test_typ -> typ . EOF [ # ]
+##
+## The known suffix of the stack is as follows:
+## typ
+##
+## WARNING: This example involves spurious reductions.
+## This implies that, although the LR(1) items shown above provide an
+## accurate view of the past (what has been recognized so far), they
+## may provide an INCOMPLETE view of the future (what was expected next).
+## In state 71, spurious reduction of production prod_typ -> at_typ
+## In state 68, spurious reduction of production sum_typ -> prod_typ
+## In state 66, spurious reduction of production func_typ -> sum_typ
+## In state 83, spurious reduction of production typ -> func_typ
+##
+
+<YOUR SYNTAX ERROR MESSAGE HERE>
+
