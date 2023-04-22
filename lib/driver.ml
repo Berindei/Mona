@@ -1,6 +1,7 @@
 open Checker
 open Compiler
 open In_channel
+open Alphaconv
 
 let typeCheck e = infer e Lin []
 
@@ -26,6 +27,7 @@ let run inf outf =
     let top = readFile topfile in
     let code = readFile inf in 
     let prog = parse_with_error (top ^ "\n" ^ code) in
-    match typeCheck prog with
+    let (alphaprog, _) = alphaExpr prog 0 in 
+    match typeCheck alphaprog with
     | Value ((_, prog'), _) -> generate prog' outf; Utils.fstring "Successfully compiled %s in %s" inf outf
     | Error e -> e

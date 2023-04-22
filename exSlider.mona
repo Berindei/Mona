@@ -1,0 +1,67 @@
+let type stream = ∀a:*. ♢(a ⊗ stream a) in
+
+let rec mkStream: ∀a:*. ∀i:Id. Widget i ⊸ F G (Widget i ⊸ Widget i ⊗ ♢a) ⊸ Widget i ⊗ stream a = Λ a i. λ w ff.
+    let F f = ff in
+    let w, ev = run f w in
+    let pack(n, @fev) = out ev in
+    let pr, @fw = split i n w in
+    let @(wfin, fs) = @(
+        let fw, fs = run mkStream a i fw F f in
+        (fw, (fev, fs))
+    ): (Widget i ⊗ (a ⊗ stream a)) @ n in
+    let sfin = into(pack(n, fs): ∃n:Time. (a ⊗ stream a) @ n) in
+    let w = join i n (pr, wfin) in
+    (w, sfin)
+in
+
+let rec mapStream: ∀a:*. ∀b:*. F G (a ⊸ b) ⊸ stream a ⊸ stream b = Λ a b. λ ff sa.
+    let F f = ff in
+    let evt((ea, fsa)) = sa in evt((run f ea, run mapStream a b F f fsa))
+in
+
+let rec mapStreamWithWidget: ∀a:*. ∀b:*. ∀i:Id. Widget i ⊸ F G (Widget i ⊗ a ⊸ Widget i ⊗ b) ⊸ stream a ⊸ Widget i ⊗ stream b  = Λ a b i. λ w ff sa.
+    let F f = ff in
+    let pack(n, ats) = out sa in
+    let @(@ea, @fsa) = ats in
+    let pr, @fw = split i n w in
+    let @(wfin, sfin) = @(
+        let w, eb = run f (fw, ea) in
+        let w, fsb = run mapStreamWithWidget a b i w F f fsa in
+        (w, (eb, fsb))
+    ) : (Widget i ⊗ (b ⊗ stream b)) @ n in
+    let w = join i n (pr, wfin) in
+    let s = into (pack(n, sfin): (∃k:Time. (b⊗stream b)@k)) in
+    (w, s)
+in
+
+let rec appWidget: ∀a:*. ∀i:Id. Widget i ⊸ stream a ⊸ F G (Widget i ⊗ a ⊸ Widget i) ⊸ Widget i = Λ a i. λ w sa ff.
+    let F f = ff in
+    let pack(n, ats) = out sa in
+    let @(@ea, @fsa) = ats in
+    let pr, @fw = split i n w in
+    let wfin: Widget i @ n = @(
+        let w = run f (fw, ea) in
+        run appWidget a i w fsa F f
+    ) in
+    join i n (pr, wfin)
+in
+
+let (F mkSliderStream): F G (F Num ⊗ F Num ⊗ F Num ⊸ (∃i:Id. Widget i) ⊗ stream F Num) = F G ( λ params.
+    let pack (i, w) = mkSlider params in
+    let w, su = run mkStream type(I) i w F G (onChange i) in
+    let w, sn = run mapStreamWithWidget type(I) type(F Num) i w F G (λ p. let w, () = p in getValue type(F Num) i w) su in
+    (pack(i, w), sn)
+)
+in
+
+((
+    let pack(cnt, container) = mkDiv () in 
+    let pack(i, w), sn = run mkSliderStream (F 10, (F 100, F 50)) in
+    let sstr = run mapStream type(F Num) type(F String) F G itos sn in
+    let pack(itext, textbox) = mkText () in
+    let textbox = setText itext (textbox, (itos F 50)) in
+    let textbox = run appWidget type(F String) itext textbox sstr F G (setText itext) in
+    let container = attach cnt i (container, w) in
+    let container = attach cnt itext (container, textbox) in
+    pack(cnt, container)
+): ∃i:Id. Widget i)

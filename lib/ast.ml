@@ -1,8 +1,10 @@
 open Utils
 
-type var = string
+type var = string * string
 type time = int
 type id = int
+
+let printvar (x1, x2) = fstring "(%s|%s)" x1 x2
 
 type indx = 
     | IVar of var
@@ -12,10 +14,11 @@ type indx =
 type indxtype = 
     | (*Ho-kago*) TTime
     | TId
+    | TType
 
 let printindx i =
     match i with 
-    | IVar x -> x
+    | IVar x -> printvar x
     | Time t -> string_of_int t
     | Id i -> string_of_int i
 
@@ -23,9 +26,12 @@ let printindxtype t =
     match t with
     | TTime -> "Time" 
     | TId -> "Id"
+    | TType -> "*"
 
 type typ = 
+    | Star
     | TVar   of var
+    | AppType of typ * typ
     | LUnit
     | Color
     | Loli   of typ * typ
@@ -48,15 +54,18 @@ type typ =
     | Char  
     | String
 
-let islint t = 
+let rec islint t = 
     match t with
-    | TVar x -> failwith (fstring "Unable to infer type of %s" x)
-    | LUnit | Loli _ | Tensor _ | LSum _ | F _ | Evt _ | At _ | Univ _ | Exist _ | Prefix _ | Widget _ -> true
+    | TVar x -> failwith (fstring "Unable to infer type of %s" (printvar x))
+    | Univ (i, it, t') -> islint t'
+    | LUnit | Loli _ | Tensor _ | LSum _ | F _ | Evt _ | At _ | Exist _ | Prefix _ | Widget _ -> true
     | _ -> false
 
 let rec printtype t = 
     match t with
-    | TVar x            -> x
+    | Star              -> "*"
+    | TVar x            -> printvar x
+    | AppType (t1, t2)  -> fstring "(%s) (%s)" (printtype t1) (printtype t2)
     | LUnit             -> "I"
     | Loli (t1, t2)     -> fstring "(%s⊸%s)" (printtype t1) (printtype t2)
     | Tensor (t1, t2)   -> fstring "(%s⊗%s)" (printtype t1) (printtype t2)
@@ -70,8 +79,8 @@ let rec printtype t =
     | G t'              -> fstring "G(%s)" (printtype t')
     | IndxT i           -> printindxtype i
     | At (t1, t')       -> fstring "%s@%s" (printtype t1) (printindx t')
-    | Univ (x, t1, t2)  -> fstring "∀%s:%s. %s" x (printindxtype t1) (printtype t2)
-    | Exist (x, t1, t2) -> fstring "∃%s:%s. %s" x (printindxtype t1) (printtype t2)
+    | Univ (x, t1, t2)  -> fstring "∀%s:%s. %s" (printvar x) (printindxtype t1) (printtype t2)
+    | Exist (x, t1, t2) -> fstring "∃%s:%s. %s" (printvar x) (printindxtype t1) (printtype t2)
     | Widget i          -> fstring "Widget %s" (printindx i)
     | Prefix (i, t)     -> fstring "Prefix %s %s" (printindx i) (printindx t)
     | Color             -> "Color"
@@ -96,12 +105,23 @@ let rec printpat p =
     | PWildcard -> "_"
     | PAt p -> fstring "@(%s)" (printpat p)
     | PF p -> fstring "F(%s)" (printpat p)
-    | PPack (i, p) -> fstring "pack(%s, %s)" i (printpat p)
+    | PPack (i, p) -> fstring "pack(%s, %s)" (printvar i) (printpat p)
     | PPair(p1, p2) -> fstring "Pair(%s, %s)" (printpat p1) (printpat p2)
     | PAtPair(p1, p2) -> fstring "P@(%s, %s)" (printpat p1) (printpat p2)
-    | PVar x -> x
+    | PVar x -> (printvar x)
     | PAnnot(p, t) -> fstring "(%s: %s)" (printpat p) (printtype t)
 
+let rec vars p =
+    match p with
+    | PUnit -> []
+    | PWildcard -> []
+    | PAt p' -> vars p'
+    | PF p' -> vars p'
+    | PPack (i, p') -> i :: (vars p')
+    | PPair (p1, p2) -> (vars p1) @ (vars p2)
+    | PAtPair (p1, p2) -> (vars p1) @ (vars p2)
+    | PVar x -> [x]
+    | PAnnot (p', _) -> vars p'
 
 type expr = 
     | EUnit
@@ -143,14 +163,15 @@ type expr =
     | EString       of string
     | Let           of pat * expr * expr
     | LetType       of var * typ * expr
+    | Type          of typ
 
 let rec printexpr e =
     match e with
     | EUnit -> "()"
     (* | LetUnit (e1, e2)                -> fstring "let () = %s in %s" (printexpr e1) (printexpr e2) *)
-    | Var x -> x
-    | Lambda (x, e')                  -> fstring "λ%s.%s" x (printexpr e')
-    | LetFix (f, t, x, e1, e2)        -> fstring "let fix %s:(%s) %s. %s in %s" f (printtype t) x (printexpr e1) (printexpr e2)
+    | Var x -> printvar x
+    | Lambda (x, e')                  -> fstring "λ%s.%s" (printvar x) (printexpr e')
+    | LetFix (f, t, x, e1, e2)        -> fstring "let fix %s:(%s) %s. %s in %s" (printvar f) (printtype t) (printvar x) (printexpr e1) (printexpr e2)
     | App (e1, e2)                    -> fstring "(%s)(%s)" (printexpr e1) (printexpr e2)
     | Pair (e1, e2)                   -> fstring "(%s, %s)" (printexpr e1) (printexpr e2)
     (* | Unpair (x1, x2, e1, e2)         -> fstring "let (%s,%s) = %s in %s" x1 x2 (printexpr e1) (printexpr e2) *)
@@ -168,22 +189,23 @@ let rec printexpr e =
     | EEvt e'                         -> fstring "evt(%s)" (printexpr e')
     | LetEvt (p, e1, e2)              -> fstring "let evt(%s) = %s in %s" (printpat p) (printexpr e1) (printexpr e2)
     (* | Let (x, e1, e2)                 -> fstring "let %s = %s in %s" x (printexpr e1) (printexpr e2) *)
-    | Select (l1, l2)                 -> fstring "(from {%s} select %s)" (List.fold_left (fun sb (x, e1) -> fstring "%s;%s←%s" sb x (printexpr e1)) "" l1)
-                                                                         (List.fold_left (fun sb (x, e2) -> fstring "%s|when %s→%s" sb x (printexpr e2)) "" l2)
+    | Select (l1, l2)                 -> fstring "(from {%s} select %s)" (List.fold_left (fun sb (x, e1) -> fstring "%s;%s←%s" sb (printvar x) (printexpr e1)) "" l1)
+                                                                         (List.fold_left (fun sb (x, e2) -> fstring "%s|when %s→%s" sb (printvar x) (printexpr e2)) "" l2)
     | EAt e'                          -> fstring "@(%s)" (printexpr e')
     (* | LetAt (x, e1, e2)               -> fstring "let @%s = %s in %s" x (printexpr e1) (printexpr e2) *)
-    | LambdaIndx (x, e')              -> fstring "Λ%s. %S" x (printexpr e')
+    | LambdaIndx (x, e')              -> fstring "Λ%s. %S" (printvar x) (printexpr e')
     | AppIndx (e1, e2)                -> fstring "(%s [%s])" (printexpr e1) (printindx e2)
     | Pack (e1, e2)                   -> fstring "pack(%s, %s)" (printindx e1) (printexpr e2)
     (* | LetPack (i, x, e1, e2)          -> fstring "let pack(%s, %s) = %s in %s" i x (printexpr e1) (printexpr e2) *)
     | Indx (indx)                     -> printindx indx
-    | Extern (f, t, s, e')            -> fstring "let extern %s:(%s) = %s in %s" f (printtype t) s (printexpr e')
+    | Extern (f, t, s, e')            -> fstring "let extern %s:(%s) = %s in %s" (printvar f) (printtype t) s (printexpr e')
     | Out e'                          -> fstring "out %s" (printexpr e')
     | Into e'                         -> fstring "into %s" (printexpr e')
     | ENum n                          -> string_of_int n
     | EChar c                         -> fstring "\'%c\'" c
     | EString s                       -> fstring "\"%s\"" s
     | Let (p, e1, e2)                 -> fstring "let %s = %s in %s" (printpat p) (printexpr e1) (printexpr e2)
-    | LetType(x, t, e')               -> fstring "let type %s = %s in %s" x (printtype t) (printexpr e')
+    | LetType(x, t, e')               -> fstring "let type %s = %s in %s" (printvar x) (printtype t) (printexpr e')
+    | Type t                          -> printtype t
     | _ -> "##############"
 

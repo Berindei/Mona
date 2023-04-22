@@ -30,7 +30,7 @@ rule read =
     | "->" | "→"  { RARROW }
     | "<-" | "←"  { LARROW }
     | "let"       { LET }
-    | "fix"       { FIX }
+    | "rec"       { REC }
     | "L"         { L }
     | "R"         { R }
     | "F"         { F }
@@ -55,8 +55,8 @@ rule read =
     | "♢" | "<>"  { DIAMOND }
     | "@"         { AT }
     | "pack"      { PACK }
-    | "∀"         { UNIV }
-    | "∃"         { EXIST }
+    | "∀" | "forall" { UNIV }
+    | "∃" | "exist"  { EXIST }
     | "Time"      { TIME }
     | "extern"    { EXTERN }
     | "Widget"    { WIDGET }
@@ -75,5 +75,5 @@ rule read =
     | string      { let s = Lexing.lexeme lexbuf in let l = String.length s in STRING (String.sub s 1 (l-2))}
     | num         { NUM (int_of_string (Lexing.lexeme lexbuf)) }
     | char        { let s = Lexing.lexeme lexbuf in CHAR (String.get s 1) }
-    | id          { ID ("_" ^ (Lexing.lexeme lexbuf)) }
+    | id          { ID ((Lexing.lexeme lexbuf),  "") }
     | eof         { EOF }

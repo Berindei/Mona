@@ -15,6 +15,9 @@ let add b = fun bl -> ((), b::bl)
 
 let get s = fun bl -> (List.assoc_opt s bl, bl)
 
+let getVar = fun ps -> "_" ^ (fst ps)
+(* let getVar = snd *)
+
 let rec elevateT (l: 'a t list) : 'a list t =
   match l with
   | []      -> return []
@@ -27,8 +30,8 @@ let rec buildParams p access =
   | PPair(p1, p2) -> (buildParams p1 (access ^ "[0]")) @ (buildParams p2 (access ^ "[1]"))
   | PAt p -> buildParams p access
   | PF p -> buildParams p access
-  | PPack(i, p) -> (i, "null") :: (buildParams p access)
-  | PVar x -> [(x, access)]
+  | PPack(i, p) -> (getVar i, "null") :: (buildParams p access)
+  | PVar x -> [((getVar x), access)]
   | PAnnot (p, _) -> buildParams p access
   | _ -> failwith "plang"
 
@@ -64,8 +67,8 @@ let rec fv e =
   | EUnit -> []
   (* | LetUnit(e1, e2) -> (fv e1) @ (fv e2) *)
   | Var x -> failwith "AAAAAAAAAAAAAAA1"
-  | TypedVar(x, t, at) -> [(x, at)]
-  | Lambda(x, e1) -> minus (fv e1) x
+  | TypedVar(x, t, at) -> [(getVar x, at)]
+  | Lambda(x, e1) -> minus (fv e1) (getVar x)
   | App(e1, e2) -> (fv e1) @ (fv e2)
   | Pair(e1, e2) -> (fv e1) @ (fv e2)
   (* | Unpair(x1, x2, e1, e2) -> minus (minus ((fv e1) @ (fv e2)) x1) x2 *)
@@ -85,7 +88,7 @@ let rec fv e =
   | Select(l1, l2) -> List.fold_left minus (
                         List.fold_left (fun l1 l2 -> l1 @ (fv l2)) [] (List.map (fun (_, e) -> e) l1) @ 
                         List.fold_left (fun l1 l2 -> l1 @ (fv l2)) [] (List.map (fun (_, e) -> e) l2)
-                      ) (List.map (fun (x,_) -> x) l1)
+                      ) (List.map (fun x -> getVar (fst x)) l1)
   | EAt(e1) -> []
   (* | LetAt(x, e1, e2) -> minus ((fv e1) @ (fv e2)) x *)
   | LambdaIndx(x, e1) -> fv e1
@@ -93,12 +96,12 @@ let rec fv e =
   | Pack(_, e2) -> (fv e2)
   (* | LetPack(x, i, e1, e2) -> minus ((fv e1) @ (fv e2)) x *)
   | Let(p, e1, e2) -> (fv e1) @ List.fold_left minus (fv e2) (vars p)
-  | LetFix(f, t, x, e1, e2) -> minus (minus ((fv e1) @ (fv e2)) f) x
+  | LetFix(f, t, x, e1, e2) -> minus (minus ((fv e1) @ (fv e2)) (getVar f)) (getVar x)
   | Extern(x, t, s, e1) -> fv e1
   | LetType(x, t', e') -> fv e'
   | Out(e1) -> fv e1
   | Into(e1) -> fv e1
-  | Indx(_) | ENum(_) | EChar(_) | EString(_) -> []
+  | Indx(_) | ENum(_) | EChar(_) | EString(_) | Type _ -> []
 
 let rec constrchain l b = 
   match l with
@@ -116,26 +119,26 @@ let gen_f_accs x l = List.fold_left (^) "x" (List.map (fun x -> fstring ", curri
 let rec compile e : string t=
 
   let get_gs l1 l2 =
-    let* l' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (x, e')) l1) in
-    let body = List.fold_left (^) "" (List.map (fun (x, e) -> fstring "\"%s\": (%s)," x e) l') in
+    (* let* l' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (x, e')) l1) in *)
+    let body = List.fold_left (^) "" (List.map (fun (x, e) -> fstring "\"%s\": (%s)," x e) l1) in
     let gs = fstring "var gs = {%s}" body in
     let gapps = List.fold_left (^) ""
       (List.map (fun (x, _) -> fstring
       "gs[\"%s\"]( x=> {if(first){
         first = false;
         fs[\"%s\"](%s)(curriedput(finchan))
-      } else chans[\"%s\"].put(x)});\n" x x (gen_f_accs x (List.map fst l2)) x) l') in
+      } else chans[\"%s\"].put(x)});\n" x x (gen_f_accs x (List.map fst l2)) x) l1) in
     return (gs, gapps)
   in
 
   let get_fs l = 
-    let* l' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (x, e')) l) in
+    (* let* l' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (getVar x, e')) l) in *)
     let body = List.fold_left (^) ""
       (List.map (fun (x, e) -> fstring
         "\"%s\": function(%s){
           return (%s)
-        },\n" x (gen_f_params x (List.map fst l')) e
-      ) l') in
+        },\n" x (gen_f_params (x) (List.map fst l)) e
+      ) l) in
     return (fstring "var fs = {%s}" body)
 
   in match e with
@@ -144,9 +147,9 @@ let rec compile e : string t=
   | Var x -> let* j = get x in
              (match j with
              | Some js -> return (fstring "(function(){return (%s)})()" js)
-             | None    -> return x)
+             | None    -> return (getVar x))
   | Lambda(x, m) -> let* m' = compile m in
-                    return (fstring "function(%s){return (%s)}" x m')
+                    return (fstring "function(%s){return (%s)}" (getVar x) m')
   | App(m, n) -> let* m' = compile m in
                  let* n' = compile n in
                  return (fstring "(%s)(%s)" m' n')
@@ -208,11 +211,11 @@ let rec compile e : string t=
   g( x => f(%s)(y => chan.put(y)) );
   return curriedget(chan);
 })()" e1' params e2' accs)
-  | Select (l1, l2) -> let* l1' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (x, e')) l1) in
-                       let* l2' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return (x, e')) l2) in
-                       let* chans = get_chans l1 in
-                       let* gs, gcalled = get_gs l1 l2 in
-                       let* fs = get_fs l2 in
+  | Select (l1, l2) -> let* l1' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return ((getVar x), e')) l1) in
+                       let* l2' = elevateT (List.map (fun (x, e) -> let* e' = compile e in return ((getVar x), e')) l2) in
+                       let* chans = get_chans l1' in
+                       let* gs, gcalled = get_gs l1' l2' in
+                       let* fs = get_fs l2' in
                        return (fstring "(function (){
   %s;
   var finchan = new Channel();
@@ -260,7 +263,7 @@ let rec compile e : string t=
               })()" str )
   (* | LetAt(x, e1, e2) -> compile (Let(x, e1, e2)) *)
   | LambdaIndx(x, e1) -> let* e1' = compile e1 in
-                         return (fstring "function (%s){return (%s)}" x e1')
+                         return (fstring "function (%s){return (%s)}" (getVar x) e1')
   | AppIndx(e1, e2) -> let* e1' = compile e1 in
                        return (fstring "(%s)(null)" e1')
   | Pack(e1, e2) -> let* e2' = compile e2 in
@@ -283,17 +286,17 @@ let rec compile e : string t=
 "((function (%s){return (%s);})
 (function %s(unit){
   return ( (%s) => {return (%s);} );
-}))" f e2' f x e1' )
+}))" (getVar f) e2' (getVar f) (getVar x) e1' )
                                else return (fstring 
 "((function (%s){return (%s);})
 (function %s(%s){
   return (%s)
-}))" f e2' f x e1' )
+}))" (getVar f) e2' (getVar f) (getVar x) e1' )
   | Extern(x, t, s, e') -> let* () = add (x, s) in compile e'
   | LetType(x, t, e') -> compile e'
   | Out e' -> compile e'
   | Into e' -> compile e'
-  | Indx(IVar x) -> return x 
+  | Indx(IVar x) -> return (getVar x) 
   | Indx _ -> failwith "This shouldn't happen"
   | TypedVar(x, _, at) -> compile (Var x)
   | ENum n -> return (string_of_int n)
@@ -313,8 +316,11 @@ let rec compile e : string t=
   }
   return f(%s, %s)
 })()" e1' params1 params2 e2' accs1 accs2)
+  | Type t -> return "null"
+
 
 let generate e f = let out = open_out f in
-               let js, _ = compile e [] in print_endline js;
+               let js, fin = compile e [] in print_endline js;
                output_string out (fstring "function main(){return (\n\n%s\n\n)};" js);
+               (* print_endline (List.fold_left (^) "" (List.map (fun ((x,y), s) -> fstring "(%s|%s): %s | " x y s) fin)); *)
                close_out out

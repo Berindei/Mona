@@ -1,0 +1,29 @@
+let type stream = ∀a:*. ♢(a ⊗ stream a) in
+
+let rec mkStream: ∀a:*. ∀i:Id. Widget i ⊸ F G (Widget i ⊸ Widget i ⊗ ♢a) ⊸ Widget i ⊗ stream a = Λ a i. λ w ff.
+    let F f = ff in
+    let w, ev = run f w in
+    let pack(n, @fev) = out ev in
+    let pr, @fw = split i n w in
+    let @(wfin, fs) = @(
+        let fw, fs = run mkStream a i fw F f in
+        (fw, (fev, fs))
+    ): (Widget i ⊗ (a ⊗ stream a)) @ n in
+    let sfin = into(pack(n, fs): ∃n:Time. (a ⊗ stream a) @ n) in
+    let w = join i n (pr, wfin) in
+    (w, sfin)
+in
+(
+    let pack (i, w) = mkButton () in
+    let w, clickStream = run mkStream type(I) i w F G (onClick i) in
+    let rec print: stream I ⊸ ♢I = λ s.
+        let evt((), ss) = s in 
+        let () = log F "pressed" in 
+        run print ss
+    in
+    let pack(n, @cv) = out (run print clickStream) in
+    let pr, @fw = split i n w in
+    let w = join i n (pr, @(let () = cv in fw)) in
+    pack (i, w)
+): ∃i:Id. Widget i
+    

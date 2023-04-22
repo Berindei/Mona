@@ -41,5 +41,5 @@
         join ifin n2 (pr2, wf)
     ) in
     let wfin = join ifin n (pr, fwfin) in
-    (wfin, (btn1, btn2))
-): (Widget ifin ⊗ (Widget i1 ⊗ Widget i2))
+    (pack(ifin, wfin), (pack(i1, btn1), pack(i2, btn2)))
+): ((∃ifin:Id. Widget ifin) ⊗ ((∃i1:Id. Widget i1) ⊗ (∃i2:Id. Widget i2)))

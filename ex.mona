@@ -1,10 +1,1 @@
-(
-    let pack(i, btn) = mkButton () in
-    // kseljhfs
-    for btn i: {
-        setColor(F Red),
-        setText(F "Hihi"),
-        clk = onClick ()
-    }
-    btn
-) : Widget i
+let n = F 9 in n

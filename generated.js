@@ -1,142 +1,132 @@
 function main(){return (
 
-((function (_interleave){return (((function (_map){return (((function (_mkUnitStr){return (
+((function (_mkStream){return (((function (_mapStream){return (((function (_mapStreamWithWidget){return (((function (_appWidget){return (
 (function(){
-  g = ((function(){return (_mkButton)})())(null)
-  return (function (_j, _w){
+  g = function(unit){return (function(_params){return (
+(function(){
+  g = ((function(){return (_mkSlider)})())(_params)
+  return (function (_i, _w){
   return (
 (function(){
-  g = ((function(){return (_mkButton)})())(null)
-  return (function (_k, _w2){
+  g = (((((_mkStream)(null))(null))(_i))(_w))(function(unit){return (((function(){return (_onChange)})())(_i))})
+  return (function (_w, _su){
   return (
 (function(){
-  g = function(unit){return (function (_j){return (function(_p){return (
+  g = (((((((_mapStreamWithWidget)(null))(null))(null))(_i))(_w))(function(unit){return (function(_p){return (
 (function(){
   g = _p
-  return (function (_w, _f){
-  return (((((_mkUnitStr)(null))(_j))(_w))(_f))
-})(g[0], g[1])})())})})}
-  return (function (_FGmkStr){
-  return (
-(function(){
-  g = _FGmkStr
-  return (function (_GmkStr){
-  return (
-(function(){
-  g = (_GmkStr)(null)
-  return (function (_mkStr){
-  return (
-(function(){
-  g = (((function(){return (_setText)})())(_j))([_w, "Buton"])
   return (function (_w){
-  return (
-(function(){
-  g = (((function(){return (_setSize)})())(_j))([_w, 20])
-  return (function (_w){
-  return (
-(function(){
-  g = ((_mkStr)(_j))([_w, function(unit){return ((function(){return (_onClick)})())}])
-  return (function (_w, _str1){
-  return (
-(function(){
-  g = (_GmkStr)(null)
-  return (function (_mkStr){
-  return (
-(function(){
-  g = (((function(){return (_setText)})())(_k))([_w2, "Buton 2"])
-  return (function (_w2){
-  return (
-(function(){
-  g = ((_mkStr)(_k))([_w2, function(unit){return ((function(){return (_onClick)})())}])
-  return (function (_w2, _str2){
-  return (
-(function(){
-  g = (((_interleave)(null))(_str1))(_str2)
-  return (function (_str){
-  return (((function (_printer){return (
-(function(){
-  g = ((_printer)(null))(_str)
-  return (function (_n, _ev){
-  return (
-(function(){
-  g = ((((function(){return (_split)})())(_j))(_n))(_w)
-  return (function (_pr, _fw){
-  return (
-(function(){
-  g = ((((function(){return (_join)})())(_j))(_n))([_pr, (function(){
-                var chan = new Channel();
-                _ev(_ev=>{_fw(_fw=>{chan.put(
-(function(){
-  g = _ev
-  return (function (){
-  return (_fw)
-})()})())})});
-                return curriedget(chan);
-              })()])
-  return (function (_w){
-  return ([_w, _w2])
-})(g)})())
+  return (((((function(){return (_getValue)})())(null))(_i))(_w))
+})(g[0])})())})}))(_su)
+  return (function (_w, _sn){
+  return ([(function (){return (_w)})(), _sn])
 })(g[0], g[1])})())
-})(null, g)})());})
-(function _printer(unit){
-  return ( (_s) => {return ((function(){
-  var chan = new Channel();
-  var g = (_s);
-  function f(_sum, _str1){
-    return (
-(function(){
-  g = (function(){
-  var sum = (_sum);
-  function f1() {
-    return ("Buton 1")
-  };
-  function f2() {
-    return ("Buton 2")
-  };
-  if(sum.tag=="L") return f1();
-  else return f2();
-})()
-  return (function (_text){
+})(g[0], g[1])})())
+})(null, g)})())})}
+  return (function (_mkSliderStream){
   return (
 (function(){
-  g = ((function(){return (_log)})())(_text)
-  return (function (){
-  return (((_printer)(null))(_str1))
-})()})())
-})(g)})())
-  };
-  g( x => f(x[0], x[1])(y => chan.put(y)) );
-  return curriedget(chan);
-})());} );
-})))
-})(g)})())
-})(g[0], g[1])})())
-})(g)})())
-})(g)})())
-})(g[0], g[1])})())
-})(g)})())
+  g = ((function(){return (_mkDiv)})())(null)
+  return (function (_cnt, _container){
+  return (
+(function(){
+  g = ((_mkSliderStream)(null))([10, [100, 50]])
+  return (function (_i, _w, _sn){
+  return (
+(function(){
+  g = (((((_mapStream)(null))(null))(null))(function(unit){return ((function(){return (_itos)})())}))(_sn)
+  return (function (_sstr){
+  return (
+(function(){
+  g = ((function(){return (_mkText)})())(null)
+  return (function (_itext, _textbox){
+  return (
+(function(){
+  g = (((function(){return (_setText)})())(_itext))([_textbox, ((function(){return (_itos)})())(50)])
+  return (function (_textbox){
+  return (
+(function(){
+  g = ((((((_appWidget)(null))(null))(_itext))(_textbox))(_sstr))(function(unit){return (((function(){return (_setText)})())(_itext))})
+  return (function (_textbox){
+  return (
+(function(){
+  g = ((((function(){return (_attach)})())(_cnt))(_i))([_container, _w])
+  return (function (_container){
+  return (
+(function(){
+  g = ((((function(){return (_attach)})())(_cnt))(_itext))([_container, _textbox])
+  return (function (_container){
+  return ((function (){return (_container)})())
 })(g)})())
 })(g)})())
 })(g)})())
 })(g)})())
 })(null, g)})())
-})(null, g)})());})
-(function _mkUnitStr(unit){
-  return ( (_j) => {return (function(_w){return (function(_ff){return (
+})(g)})())
+})(null, g[0], g[1])})())
+})(null, g)})())
+})(g)})());})
+(function _appWidget(unit){
+  return ( (_a) => {return (function (_i){return (function(_w){return (function(_sa){return (function(_ff){return (
 (function(){
   g = _ff
   return (function (_f){
   return (
 (function(){
-  g = (((_f)(null))(_j))(_w)
-  return (function (_w, _ev){
+  g = _sa
+  return (function (_n, _ats){
   return (
 (function(){
-  g = _ev
-  return (function (_n, _evat){
+  var chan1 = new Channel();
+  var chan2 = new Channel();
+  var g = (_ats);
+  g(pair => {chan1.put(pair[0]); chan2.put(pair[1]);})
+  function f(_ea, _fsa){
+    return (
+(function(){
+  g = ((((function(){return (_split)})())(_i))(_n))(_w)
+  return (function (_pr, _fw){
   return (
 (function(){
-  g = ((((function(){return (_split)})())(_j))(_n))(_w)
+  g = (function(){
+                var chan = new Channel();
+                _ea(_ea=>{_fw(_fw=>{_fsa(_fsa=>{chan.put(
+(function(){
+  g = ((_f)(null))([_fw, _ea])
+  return (function (_w){
+  return (((((((_appWidget)(null))(null))(_i))(_w))(_fsa))(_f))
+})(g)})())})})});
+                return curriedget(chan);
+              })()
+  return (function (_wfin){
+  return (((((function(){return (_join)})())(_i))(_n))([_pr, _wfin]))
+})(g)})())
+})(g[0], g[1])})())
+  }
+  return f(curriedget(chan1), curriedget(chan2))
+})())
+})(null, g)})())
+})(g)})())})})})});} );
+})));})
+(function _mapStreamWithWidget(unit){
+  return ( (_a) => {return (function (_b){return (function (_i){return (function(_w){return (function(_ff){return (function(_sa){return (
+(function(){
+  g = _ff
+  return (function (_f){
+  return (
+(function(){
+  g = _sa
+  return (function (_n, _ats){
+  return (
+(function(){
+  var chan1 = new Channel();
+  var chan2 = new Channel();
+  var g = (_ats);
+  g(pair => {chan1.put(pair[0]); chan2.put(pair[1]);})
+  function f(_ea, _fsa){
+    return (
+(function(){
+  g = ((((function(){return (_split)})())(_i))(_n))(_w)
   return (function (_pr, _fw){
   return (
 (function(){
@@ -144,25 +134,104 @@ function main(){return (
   var chan2 = new Channel();
   var g = ((function(){
                 var chan = new Channel();
-                _fw(_fw=>{_evat(_evat=>{chan.put(
+                _ea(_ea=>{_fw(_fw=>{_fsa(_fsa=>{chan.put(
 (function(){
-  g = ((((_mkUnitStr)(null))(_j))(_fw))(_f)
-  return (function (_fw, _str){
-  return ([_fw, [_evat, _str]])
+  g = ((_f)(null))([_fw, _ea])
+  return (function (_w, _eb){
+  return (
+(function(){
+  g = (((((((_mapStreamWithWidget)(null))(null))(null))(_i))(_w))(_f))(_fsa)
+  return (function (_w, _fsb){
+  return ([_w, [_eb, _fsb]])
+})(g[0], g[1])})())
+})(g[0], g[1])})())})})});
+                return curriedget(chan);
+              })());
+  g(pair => {chan1.put(pair[0]); chan2.put(pair[1]);})
+  function f(_wfin, _sfin){
+    return (
+(function(){
+  g = ((((function(){return (_join)})())(_i))(_n))([_pr, _wfin])
+  return (function (_w){
+  return (
+(function(){
+  g = (function (){return (_sfin)})()
+  return (function (_s){
+  return ([_w, _s])
+})(g)})())
+})(g)})())
+  }
+  return f(curriedget(chan1), curriedget(chan2))
+})())
+})(g[0], g[1])})())
+  }
+  return f(curriedget(chan1), curriedget(chan2))
+})())
+})(null, g)})())
+})(g)})())})})})})});} );
+})));})
+(function _mapStream(unit){
+  return ( (_a) => {return (function (_b){return (function(_ff){return (function(_sa){return (
+(function(){
+  g = _ff
+  return (function (_f){
+  return ((function(){
+  var chan = new Channel();
+  var g = (_sa);
+  function f(_ea, _fsa){
+    return ((function(){
+  var chan = new Channel();
+  chan.put([((_f)(null))(_ea), (((((_mapStream)(null))(null))(null))(_f))(_fsa)]);
+  return curriedget(chan);
+})())
+  };
+  g( x => f(x[0], x[1])(y => chan.put(y)) );
+  return curriedget(chan);
+})())
+})(g)})())})})});} );
+})));})
+(function _mkStream(unit){
+  return ( (_a) => {return (function (_i){return (function(_w){return (function(_ff){return (
+(function(){
+  g = _ff
+  return (function (_f){
+  return (
+(function(){
+  g = ((_f)(null))(_w)
+  return (function (_w, _ev){
+  return (
+(function(){
+  g = _ev
+  return (function (_n, _fev){
+  return (
+(function(){
+  g = ((((function(){return (_split)})())(_i))(_n))(_w)
+  return (function (_pr, _fw){
+  return (
+(function(){
+  var chan1 = new Channel();
+  var chan2 = new Channel();
+  var g = ((function(){
+                var chan = new Channel();
+                _fw(_fw=>{_fev(_fev=>{chan.put(
+(function(){
+  g = (((((_mkStream)(null))(null))(_i))(_fw))(_f)
+  return (function (_fw, _fs){
+  return ([_fw, [_fev, _fs]])
 })(g[0], g[1])})())})});
                 return curriedget(chan);
               })());
   g(pair => {chan1.put(pair[0]); chan2.put(pair[1]);})
-  function f(_fwfin, _fstr){
+  function f(_wfin, _fs){
     return (
 (function(){
-  g = ((((function(){return (_join)})())(_j))(_n))([_pr, _fwfin])
-  return (function (_wfin){
+  g = (function (){return (_fs)})()
+  return (function (_sfin){
   return (
 (function(){
-  g = (function (){return (_fstr)})()
-  return (function (_str){
-  return ([_wfin, _str])
+  g = ((((function(){return (_join)})())(_i))(_n))([_pr, _wfin])
+  return (function (_w){
+  return ([_w, _sfin])
 })(g)})())
 })(g)})())
   }
@@ -171,70 +240,7 @@ function main(){return (
 })(g[0], g[1])})())
 })(null, g)})())
 })(g[0], g[1])})())
-})(g)})())})});} );
-})));})
-(function _map(unit){
-  return ( (_f) => {return (function(_s){return (
-(function(){
-  g = _f
-  return (function (_f1){
-  return ((function(){
-  var chan = new Channel();
-  var g = (_s);
-  function f(_x, _sxs){
-    return ((function(){
-  var chan = new Channel();
-  chan.put([((_f1)(null))(_x), (((_map)(null))(_f1))(_sxs)]);
-  return curriedget(chan);
-})())
-  };
-  g( x => f(x[0], x[1])(y => chan.put(y)) );
-  return curriedget(chan);
-})())
-})(g)})())});} );
-})));})
-(function _interleave(unit){
-  return ( (_s1) => {return (function(_s2){return ((function (){
-  var chans = {"_xs": new Channel(),"_ys": new Channel(),};
-  var finchan = new Channel();
-  var gs = {"_xs": (_s1),"_ys": (_s2),};
-  var fs = {"_xs": function(_xs, _ys){
-          return (
-(function(){
-  g = _xs
-  return (function (_x, _sxs){
-  return ((function(){
-  var chan = new Channel();
-  chan.put([{value: _x, tag:"L"}, (((_interleave)(null))(_sxs))(_ys)]);
-  return curriedget(chan);
-})())
-})(g[0], g[1])})())
-        },
-"_ys": function(_ys, _xs){
-          return (
-(function(){
-  g = _ys
-  return (function (_y, _sys){
-  return ((function(){
-  var chan = new Channel();
-  chan.put([{value: _y, tag:"R"}, (((_interleave)(null))(_xs))(_sys)]);
-  return curriedget(chan);
-})())
-})(g[0], g[1])})())
-        },
-};
-  var first = true;
-  gs["_xs"]( x=> {if(first){
-        first = false;
-        fs["_xs"](x, curriedget(chans["_ys"]))(curriedput(finchan))
-      } else chans["_xs"].put(x)});
-gs["_ys"]( x=> {if(first){
-        first = false;
-        fs["_ys"](x, curriedget(chans["_xs"]))(curriedput(finchan))
-      } else chans["_ys"].put(x)});
-;
-  return curriedget(finchan);
-})())});} );
+})(g)})())})})});} );
 }))
 
 )};

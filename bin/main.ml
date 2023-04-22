@@ -1,3 +1,3 @@
 open Mona
 
-let () = print_endline (Driver.run "exfull5.mona" "generated.js")
+let () = print_endline (Driver.run "exSlider.mona" "generated.js")

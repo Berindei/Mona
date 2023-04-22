@@ -1,0 +1,57 @@
+let type list = ∀a:*. (unit + (a * list a)) in
+let type option = ∀a:*. (unit + a) in
+
+F (
+    let nil: list = Λa. L () in 
+    let cons: ∀a:*. a -> list a -> list a = Λa. λ x xs. R (x, xs) in
+    let hd: ∀a:*. list a -> option a = Λa. λ l. case(l,
+        L () -> L (), 
+        R (x, xs) -> R x
+    ) in 
+    let rec concat: ∀a:*. list a -> list a -> list a = Λa. λ l1 l2. case(l1,
+        L () -> l2,
+        R (x, xs) -> R (x, concat a xs l2)
+    ) in 
+    let rec zip: ∀a:*. ∀b:*. list a -> list b -> (unit + list (a * b)) = Λ a b. λ l1 l2. case(l1,
+        L () -> case (l2,
+            L () -> R L (),
+            R _ -> L ()
+        ),
+        R (x, xs) -> case (l2,
+            L () -> L (),
+            R (y, ys) -> case (zip a b xs ys,
+                L () -> L(),
+                R r -> R R((x, y), r)
+            )
+        )
+    ) in
+    let rec interleave: ∀a:*. ∀b:*. list a -> list b -> list (a+b) = Λ a b. λ l1 l2. case (l1,
+        L () -> case (l2,
+            L () -> L (),
+            R (x, xs) -> R (R x, interleave a b l1 xs)
+        ),
+        R (x, xs) -> case (l2,
+            L () -> R (L x, interleave a b xs l2),
+            R (y, ys) -> R (L x, R(R y, interleave a b xs ys))
+        )
+    ) in
+    let rec map: ∀a:*. ∀b:*. (a -> b) -> list a -> list b = Λ a b. λ f l. case (l,
+        L () -> L (),
+        R (x, xs) -> R (f x, map a b f xs)
+    ) in 
+    let rec interleave2: ∀a:*. ∀b:*. list a -> list b -> list (a+b) = Λ a b. λ l1 l2. case (l1,
+        L () -> case (l2,
+            L () -> L (),
+            R _ -> map b type(a+b) (λx. R x) l2
+        ),
+        R (x, xs) -> case (l2,
+            L () -> map a type(a+b) (λx. L x) l1,
+            R (y, ys) -> R (L x, R(R y, interleave a b xs ys))
+        )
+    ) in
+    let l1: list Num = R(1, R(2, R(3, L ()))) in
+    let l2: list Char = R('a', R('b', R('c', L ()))) in
+    let empty = nil type(Num) in
+    let f1: list Num -> list (list Num) = map type(Num) type(list Num) (λx. empty) in 
+    f1 l1
+) : F (list (list Num))

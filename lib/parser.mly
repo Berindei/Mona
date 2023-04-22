@@ -31,10 +31,14 @@
     let mkuniv (xs, t) = List.fold_right (fun (x, i) e' -> Univ(x, i, e')) xs t
 
     let mkexist (xs, t) = List.fold_right (fun (x, i) e' -> Exist(x, i, e')) xs t
+
+    let mkrec (f, t, lam, e) = match lam with
+                               | Lambda(x, e') | LambdaIndx(x, e') -> LetFix(f, t, x, e', e)
+                               | _ -> failwith "pls :("
                           
 %}
 
-%token <string> ID
+%token <Ast.var> ID
 %token <int> NUM
 %token <string> STRING
 %token <char> CHAR
@@ -43,7 +47,7 @@
 %token LPARAN RPARAN
 %token DOT COLON COMMA BAR SEMICOLON
 %token RARROW LARROW LOLI
-%token LET IN EXTERN FIX
+%token LET IN EXTERN REC
 %token L R
 %token CASE
 %token P1 P2
@@ -110,6 +114,7 @@ let unary_exp:=
     | P2; ~=exp_atom; <Proj2>
     | RUN; ~=exp_atom; <Run>
     | EVT; LPARAN; ~=exp_atom; RPARAN; <EEvt>
+    | TYPE; LPARAN; ~=typ; RPARAN; <Type>
     | AT; ~=exp_atom; <EAt>
     | OUT; ~=exp_atom; <Out>
     | INTO; ~=exp_atom; <Into>
@@ -138,7 +143,7 @@ let letexp==
     | LET; ~=pat; EQ; e1=exp; IN; e2=exp;                          {match pat with PAnnot(p, t) -> Let(p, (Annot(e1, t)), e2) | _ -> Let(pat, e1, e2)}
     | LET; EVT; ~=pat; EQ; e1=exp; IN; e2=exp;                     <LetEvt>
     | LET; EXTERN; ~=ID; COLON; ~=typ; EQ; ~=STRING; IN; e2=exp;   <Extern>
-    | LET; FIX; ~=ID; COLON; ~=typ; ~=ID; DOT; e1=exp; IN; e2=exp; <LetFix>
+    | LET; REC; ~=ID; COLON; ~=typ; EQ;  ~=lambdaexp; IN; ~=exp;   <mkrec>
     | LET; TYPE; ~=ID; EQ; ~=typ; IN; ~=exp;                       <LetType>
 
 let lambdaexp==
@@ -205,12 +210,17 @@ let unit_indx_def:=
 let indxtyp:=
     | TIME; {TTime}
     | WID;  {TId}
+    | TIMES; {TType}
 
 let indx:=
     | ~=ID; <IVar>
 
 let typ:=
     | ~=func_typ; <> 
+
+let typ_atom_list:=
+    | ~=tp_atom;                  <>
+    | ~=typ_atom_list; ~=tp_atom; <AppType>
 
 let func_typ:=
     | UNIV; ~=indxidlistst; DOT; ~=typ;  <mkuniv>
@@ -231,7 +241,7 @@ let prod_typ:=
 
 let at_typ:=
     | ~=at_typ; AT; ~=indx; <At>
-    | ~=tp_atom; <>
+    | ~=typ_atom_list; <>
 
 let tp_atom:=
     | ~=unary_tp;            <>
